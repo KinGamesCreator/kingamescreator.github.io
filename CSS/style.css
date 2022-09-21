@@ -1,3 +1,4 @@
+html { scroll-behavior: smooth; }
 
 body{
     padding: 5pt;
@@ -11,6 +12,8 @@ body{
 h1 { font-size: 55pt; display: contents; color: rgb(62, 206, 206); }
 h2 { font-size: 30pt; display: contents; color: rgb(219, 168, 74); }
 h3 { font-size: 20pt; display:ruby ; color: rgb(219, 168, 74); margin-bottom: 5pt; }
+
+
 
 .code {
     background-color: black;
@@ -26,7 +29,7 @@ img {border:solid 1pt;border-color: rgba(255, 255, 255, 0.61);}
 img:hover {border:solid 1pt;border-color: rgb(255, 255, 255);}
 
 .tags { padding: 5pt; background-color: rgb(0, 0, 0); }
-.tags a { color: rgb(79, 79, 189); text-decoration: none; display:contents;}
+.tags a { color: rgb(79, 79, 189); text-decoration: none; display:contents; }
 .tags a:hover { color: rgb(106, 106, 238); }
 
 .code:hover {
