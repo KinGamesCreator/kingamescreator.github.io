@@ -32,7 +32,7 @@
 
         <br>
 
-        <h3>Tags:</h3>
+        <h3>General tags:</h3>
         <div class="tags">
             <a href="#msg">&lt;msg&gt;</a>&nbsp;
             <a href="#delay">&lt;delay&gt;</a>&nbsp;
@@ -47,7 +47,14 @@
             <a href="#get">&lt;get&gt;</a>
         </div>
         <br>
+        <h3>SCRIPT.tag only:</h3>
+        <div class="tags">
+            <a href="#argument">&lt;argument&gt;</a>&nbsp;
+            <a href="#all">&lt;*&gt;</a>&nbsp;
+        </div>
+        <br>
         <hr>
+        <br>
 
         <h3 id="msg"> #msg </h3><br>
         <div class="content">
@@ -60,7 +67,7 @@
             SCRIPT.code &lt;msg Message1&gt; &lt;msg message2&gt; &lt;msg message3&gt;
         </div>
 
-        <br><hr>
+        <br><hr><br>
 
         <h3 id="delay"> #delay </h3><br>
         <div class="content">
@@ -71,7 +78,7 @@
             SCRIPT.code &lt;msg first message&gt; &lt;delay 5000&gt; &lt;msg second message (5 secs later)&gt;
         </div>
 
-        <br><hr>
+        <br><hr><br>
 
         <h3 id="choose"> #choose </h3><br>
         <div class="content">
@@ -82,7 +89,7 @@
             SCRIPT.code &lt;msg the selected letter is: &lt;choose A && B && C&gt;&gt;
         </div>
 
-        <br><hr>
+        <br><hr><br>
 
         <h3 id="cmd"> #cmd </h3><br>
         <div class="content">
@@ -93,7 +100,7 @@
             SCRIPT.code &lt;cmd say @everyone mention not allowed in say command.&gt;
         </div>
 
-        <br><hr>
+        <br><hr><br>
 
         <h3 id="nick"> #nick </h3><br>
         <div class="content">
@@ -104,7 +111,7 @@
             SCRIPT.code &lt;msg Hello &lt;nick&gt;, hello &lt;nick 653360060516270151&gt;&gt;
         </div>
 
-        <br><hr>
+        <br><hr><br>
 
         <h3 id="name"> #name </h3><br>
         <div class="content">
@@ -115,7 +122,7 @@
             SCRIPT.code &lt;msg Hello &lt;name&gt;, hello &lt;name 653360060516270151&gt;&gt;
         </div>
 
-        <br><hr>
+        <br><hr><br>
 
         <h3 id="id"> #id </h3><br>
         <div class="content">
@@ -126,7 +133,7 @@
             SCRIPT.code &lt;msg Hello John, your ID is: &lt;id John&gt;&gt;
         </div>
 
-        <br><hr>
+        <br><hr><br>
 
         <h3 id="ruser"> #ruser </h3><br>
         <div class="content">
@@ -137,7 +144,7 @@
             SCRIPT.code &lt;msg Hello &lt;ruser&gt;&gt;
         </div>
 
-        <br><hr>
+        <br><hr><br>
 
         <h3 id="rnumber"> #rnumber</h3><br>
         <div class="content">
@@ -150,7 +157,7 @@
             SCRIPT.code &lt;msg 100 to 200: &lt;rnumber 100 200&gt;&gt;
         </div>
 
-        <br><hr>
+        <br><hr><br>
 
         <h3 id="set"> #set </h3><br>
         <div class="content">
@@ -161,7 +168,7 @@
             SCRIPT.code &lt;set USERNAME &lt;ruser&gt;&gt;
         </div>
 
-        <br><hr>
+        <br><hr><br>
 
         <h3 id="get"> #get </h3><br>
         <div class="content">
@@ -170,6 +177,45 @@
         </div>
         <div class="code">
             SCRIPT.code &lt;set USERNAME &lt;ruser&gt;&gt; &lt;msg Hello &lt;get USERNAME&gt;!&gt;
+        </div>
+
+        <br><hr><br>
+        <!-- SCRIPT TAGS ONLY -->
+
+        <center><h3>SCRIPT.tag ONLY</h3></center>
+        <br>
+        <center>
+        <b style="color: rgb(250, 54, 54);">WARNING:</b> The following tags can ONLY be used in the SCRIPT.tag command.
+        </center>
+        <br>
+        <div class="code">
+            SCRIPT.tag add matchMaker|&lt;msg &lt;ruser&gt; x &lt;ruser&gt;&gt;
+        </div>
+        <br><hr><br>
+
+        <h3 id="argument"> #argument </h3><br>
+        <div class="content">
+            The "argument" tag is used to get arguments entered in order when the code is triggered.
+            <br><b style="color: rgb(250, 54, 54);">WARNING:</b> By using this tag no one will be able to execute your code if you don't provide all the arguments.
+            <br>Example:
+        </div>
+        <div class="code">
+            SCRIPT.tag add matchMaker|&lt;msg &lt;argument&gt; x &lt;ruser&gt;&gt;
+            <br>
+            > matchMaker John
+        </div>
+
+        <br><hr><br>
+
+        <h3 id="all"> #&lt;*&gt; </h3><br>
+        <div class="content">
+            The "&lt;*&gt;" tag is used to get all the remaining arguments as a text with spaces.
+            <br>Example:
+        </div>
+        <div class="code">
+            SCRIPT.tag add repeat|&lt;msg &lt;*&gt;&gt;
+            <br>
+            > repeat Hello world, its a say command with @everyone and @here.
         </div>
 
     </body>
