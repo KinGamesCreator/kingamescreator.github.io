@@ -47,7 +47,8 @@
             <a href="#ruser">&lt;ruser&gt;</a>&nbsp;
             <a href="#rnumber">&lt;rnumber&gt;</a>&nbsp;
             <a href="#set">&lt;set&gt;</a>&nbsp;
-            <a href="#get">&lt;get&gt;</a>
+            <a href="#get">&lt;get&gt;</a>&nbsp;
+            <a href="#text">&lt;text&gt;</a>
         </div>
         <br>
         <h3>SCRIPT.tag only:</h3>
@@ -180,6 +181,17 @@
         </div>
         <div class="code">
             SCRIPT.code &lt;set USERNAME &lt;ruser&gt;&gt; &lt;msg Hello &lt;get USERNAME&gt;!&gt;
+        </div>
+
+        <br><hr><hr>
+
+        <h3 id="text"> #text </h3><br>
+        <div class="content">
+            The "text" tag is used to avoid executing code in SBL and instead work on it as plain text.
+            <br>Example:
+        </div>
+        <div class="code">
+            SCRIPT.code &lt;msg &lt;text &lt;msg this tag will not be executed!&gt;&gt;&gt;
         </div>
 
         <br><hr><hr>
