@@ -29,7 +29,7 @@ img:hover {border:solid 1pt;border-color: rgb(255, 255, 255);}
 .tags a { color: rgb(79, 79, 189); text-decoration: none; display:contents}
 .tags a:hover { color: rgb(106, 106, 238); }
 
-.code:hover{
+.code:hover {
     border-color: rgb(255, 255, 255);
 }
 
