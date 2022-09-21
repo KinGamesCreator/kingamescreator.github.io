@@ -10,7 +10,7 @@ body{
 .title {text-align: center;}
 h1 { font-size: 55pt; display: contents; color: rgb(62, 206, 206); }
 h2 { font-size: 30pt; display: contents; color: rgb(219, 168, 74); }
-h3 { font-size: 20pt; display: contents; color: rgb(219, 168, 74); margin-bottom: 5pt; }
+h3 { font-size: 20pt; display:ruby ; color: rgb(219, 168, 74); margin-bottom: 5pt; }
 
 .code {
     background-color: black;
