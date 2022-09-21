@@ -1,0 +1,37 @@
+
+body{
+    padding: 5pt;
+    font-family: 'Lato', sans-serif;
+    background-color: rgb(0, 0, 14);
+    color: white;
+}
+
+.title {text-align: center;}
+h1 { font-size: 500%; display: inline-block; color: rgb(62, 206, 206); }
+h2 { font-size: 300%; display: inline-block; color: rgb(219, 168, 74); }
+h3 { font-size: 200%; display: inline-block; color: rgb(219, 168, 74); margin-bottom: 5pt; }
+
+.code {
+    background-color: black;
+    color: rgb(0, 160, 0);
+    border:solid 1pt;
+    border-color: rgba(255, 255, 255, 0.61);
+    padding: 5pt;
+    border-radius: 5px;
+}
+.code:hover { border-color: rgb(255, 255, 255); }
+
+img {border:solid 1pt;border-color: rgba(255, 255, 255, 0.61);}
+img:hover {border:solid 1pt;border-color: rgb(255, 255, 255);}
+
+.tags { padding: 5pt; background-color: rgb(0, 0, 0); }
+.tags a { color: rgb(79, 79, 189); text-decoration: none; }
+.tags a:hover { color: rgb(106, 106, 238); }
+
+.code:hover{
+    border-color: rgb(255, 255, 255);
+}
+
+.content {
+    background-color: rgb(12, 12, 12);
+}

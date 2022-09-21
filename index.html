@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>SBL Reference</title>
+
+        <!--ESTILO-->
+        <link rel="stylesheet" href="CSS/style.css">
+
+        <!--FUENTES-->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        
+        <div class="title"> <h1>[S.B.L.]</h1><h2>.Reference</h2> </div>
+        <br>
+
+        <!-- INTRODUCCIÓN -->
+        > <i style="color: aqua;">Script Bot Language</i> is a markup language for creating custom functions in the "SCRIPT" bot for Discord.
+        It can be executed with the <i style="color: aqua;">SCRIPT.code</i> command or by programming it in tags.
+
+        <br><br>
+
+        Example code:
+        <div class="code">
+            &lt;msg Hello!&gt; &lt;delay 2000&gt; &lt;msg my name is SCRIPT&gt;
+        </div>
+        <br>
+        <center><img src="IMG/res.png"></center>
+
+        <br>
+
+        <h3>Tags:</h3>
+        <div class="tags">
+            <a href="#msg">&lt;msg&gt;</a>
+            <a href="#delay">&lt;delay&gt;</a>
+            <a href="#choose">&lt;choose&gt;</a>
+            <a href="#cmd">&lt;cmd&gt;</a>
+            <a href="#nick">&lt;nick&gt;</a>
+            <a href="#name">&lt;name&gt;</a>
+            <a href="#id">&lt;id&gt;</a>
+            <a href="#ruser">&lt;ruser&gt;</a>
+            <a href="#rnumber">&lt;rnumber&gt;</a>
+            <a href="#set">&lt;set&gt;</a>
+            <a href="#get">&lt;get&gt;</a>
+        </div>
+        <br>
+        <hr>
+
+        <h3 id="msg"> #msg </h3><br>
+        <div class="content">
+            The "msg" tag is used by SCRIPT to send a text message with the specified content.
+            <br>
+            <b style="color: rgb(250, 54, 54);">WARNING:</b> The message can mention @everyone or @here if the bot has permissions.
+            <br>Example:
+        </div>
+        <div class="code">
+            SCRIPT.code &lt;msg Message1&gt; &lt;msg message2&gt; &lt;msg message3&gt;
+        </div>
+
+        <br><hr>
+
+        <h3 id="delay"> #delay </h3><br>
+        <div class="content">
+            The "delay" tag is used to set a waiting time between instructions (in milliseconds).
+            <br>Example:
+        </div>
+        <div class="code">
+            SCRIPT.code &lt;msg first message&gt; &lt;delay 5000&gt; &lt;msg second message (5 secs later)&gt;
+        </div>
+
+        <br><hr>
+
+        <h3 id="choose"> #choose </h3><br>
+        <div class="content">
+            The "choose" tag is used to randomly select one value among several.
+            <br>Example:
+        </div>
+        <div class="code">
+            SCRIPT.code &lt;msg the selected letter is: &lt;choose A && B && C&gt;&gt;
+        </div>
+
+        <br><hr>
+
+        <h3 id="cmd"> #cmd </h3><br>
+        <div class="content">
+            The "cmd" tag is used to execute a SCRIPT command (regardless of whether or not the user has permission to execute it).
+            <br>Example:
+        </div>
+        <div class="code">
+            SCRIPT.code &lt;cmd say @everyone mention not allowed in say command.&gt;
+        </div>
+
+        <br><hr>
+
+        <h3 id="nick"> #nick </h3><br>
+        <div class="content">
+            The "nick" tag is used to obtain a user's own nickname from their username or ID. If no argument is given, it returns the nickname of the person executing the code.
+            <br>Example:
+        </div>
+        <div class="code">
+            SCRIPT.code &lt;msg Hello &lt;nick&gt;, hello &lt;nick 653360060516270151&gt;&gt;
+        </div>
+
+        <br><hr>
+
+        <h3 id="name"> #name </h3><br>
+        <div class="content">
+            The "name" tag is used to obtain a user's username from an ID. If no arguments are given, it returns the username of the person executing the code.
+            <br>Example:
+        </div>
+        <div class="code">
+            SCRIPT.code &lt;msg Hello &lt;name&gt;, hello &lt;name 653360060516270151&gt;&gt;
+        </div>
+
+        <br><hr>
+
+        <h3 id="id"> #id </h3><br>
+        <div class="content">
+            The "id" tag is used to obtain a user's ID from their username. If no arguments are given, it returns the ID of the person executing the code.
+            <br>Example:
+        </div>
+        <div class="code">
+            SCRIPT.code &lt;msg Hello John, your ID is: &lt;id John&gt;&gt;
+        </div>
+
+        <br><hr>
+
+        <h3 id="ruser"> #ruser </h3><br>
+        <div class="content">
+            The "ruser" tag is used to obtain the username of a random user on the server.
+            <br>Example:
+        </div>
+        <div class="code">
+            SCRIPT.code &lt;msg Hello &lt;ruser&gt;&gt;
+        </div>
+
+        <br><hr>
+
+        <h3 id="rnumber"> #rnumber</h3><br>
+        <div class="content">
+            The "rnumber" tag is used to obtain a random integer. If a single argument is entered, it will return a number from 0 to the specified number. If two values ​​are specified, it will return a random number within the range.
+            <br>Example:
+        </div>
+        <div class="code">
+            SCRIPT.code &lt;msg 0 to 100: &lt;rnumber 100&gt;&gt;
+            <br>
+            SCRIPT.code &lt;msg 100 to 200: &lt;rnumber 100 200&gt;&gt;
+        </div>
+
+        <br><hr>
+
+        <h3 id="set"> #set </h3><br>
+        <div class="content">
+            The "set" tag is used to declare a temporary variable with a name and value of your choice.
+            <br>Example:
+        </div>
+        <div class="code">
+            SCRIPT.code &lt;set USERNAME &lt;ruser&gt;&gt;
+        </div>
+
+        <br><hr>
+
+        <h3 id="get"> #get </h3><br>
+        <div class="content">
+            The "get" tag is used to obtain the value of a previously created temporary variable.
+            <br>Example:
+        </div>
+        <div class="code">
+            SCRIPT.code &lt;set USERNAME &lt;ruser&gt;&gt; &lt;msg Hello &lt;get USERNAME&gt;!&gt;
+        </div>
+
+    </body>
+</html>
