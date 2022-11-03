@@ -7,7 +7,7 @@ connection = false;
 function setup() {
   createCanvas(400, 400);
 
-  socket = new WebSocket('ws://' + host);
+  socket = new WebSocket('wss://' + host);
   socket.onopen = () => connection = true;
   socket.onclose = () => connection = false;
 }
