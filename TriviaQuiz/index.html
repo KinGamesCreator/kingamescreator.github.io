@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Trivia Quiz: Maker</title>
+    <link rel="stylesheet" href="CSS/style.css">
+</head>
+<body>
+    
+    <img src="IMG/tlogo.png" class="logo">
+
+    <div class="container">
+
+        <h2>¡Bienvenido!</h2>
+        <h3>Para crear tu propio quiz, completa los campos de abajo y toca "Enviar".<br>Un administrador deberá aceptar el quiz para que salga en la app.
+        <br>Tenga en cuenta que solo puede enviar 1 quiz al día.</h3>
+
+        <hr><br>
+
+        <form id="quizForm">
+            <label for="quizName">Nombre del Quiz:</label><br>
+            <input type="text" id="quizName"><br>
+            <hr>
+            <div id="questionContainer">
+                <div id="question1">
+                    <label for="1question">Pregunta:</label><br>
+                    <textarea id="1question"></textarea><br>
+                    <input type="checkbox" id="1isImage">
+                    <label for="1isImage">Es el link de una imagen</label><br>
+                    <br>
+                    <label for="1option1">Opción 1:</label>
+                    <input type="radio" name="correctOption1" value="0">
+                    <input type="text" id="1option1"><br>
+                    <label for="1option2">Opción 2:</label>
+                    <input type="radio" name="correctOption1" value="1">
+                    <input type="text" id="1option2"><br>
+                    <label for="1option3">Opción 3:</label>
+                    <input type="radio" name="correctOption1" value="2">
+                    <input type="text" id="1option3"><br>
+                    <label for="1option4">Opción 4:</label>
+                    <input type="radio" name="correctOption1" value="3">
+                    <input type="text" id="1option4"><br>
+                </div>
+            </div>
+            <button type="button" id="addQuestion">Añadir</button>
+            <button type="button" id="removeQuestion">Eliminar</button>
+            <br><br>
+            <button type="submit" id="submitQuiz">Enviar</button>
+            
+        </form>
+
+        <script src="JS/scripts.js"></script>
+
+    </div>
+
+</body>
+</html>

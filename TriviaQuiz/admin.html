@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin</title>
+
+    <link rel="stylesheet" href="CSS/admin.css">
+    <script src='JS/admin.js' defer></script>
+</head>
+<body>
+    
+    Admin key:
+    <input type="text" id="adminKey">
+    <br><br>
+    <input type="text" id="levelID">
+    <input type="button" value="load level" onclick="loadLevel()">
+    <br><br>
+
+    <textarea id="levelData" cols="100" rows="30"></textarea>
+
+    <br>
+    <input type="button" value="Accept" onclick="acceptLevel()">
+    <input type="button" value="Decline">
+
+    <br><br>
+
+    <input type="button" value="getList" onclick="getList()">
+
+    <br><br>
+
+    <div id="list">
+
+    </div>
+
+    <br>
+
+</body>
+</html>
