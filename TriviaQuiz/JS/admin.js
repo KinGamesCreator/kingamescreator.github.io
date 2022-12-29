@@ -10,7 +10,6 @@ function loadLevel() {
         .then(r => r.text())
         .then(data => {
             levelData.value = data;
-            showImages();
         }).catch(error => console.error(error))
 }
 
@@ -46,18 +45,4 @@ function declineLevel() {
         .then(data => {
             alert(data);
         }).catch(error => console.error(error))
-}
-
-function showImages() {
-    imageList.innerHTML = "";
-    try {
-        let _d = JSON.parse(levelData);
-        _d.data.forEach(q => {
-            if (q.image != "") {
-                imageList.innerHTML += `<img scr="${q.image}"><br>`
-            }
-        });
-    } catch {
-        console.log("error en las imágenes.")
-    }
 }

@@ -64,7 +64,7 @@ const submitQuiz = (e) => {
     };
     
     enviarPeticionPOST(quiz).then(apiResponse => {
-        console.log(apiResponse);
+        alert(apiResponse);
     });
 
 }
