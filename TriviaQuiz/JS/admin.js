@@ -3,12 +3,14 @@ adminKey = document.getElementById("adminKey");
 levelID = document.getElementById("levelID");
 levelData = document.getElementById("levelData");
 list = document.getElementById("list");
+imageList = document.getElementById("images");
 
 function loadLevel() {
     fetch(`https://kingames.tk/revLevel?key=${adminKey.value}&id=${levelID.value}`)
         .then(r => r.text())
         .then(data => {
             levelData.value = data;
+            showImages();
         }).catch(error => console.error(error))
 }
 
@@ -44,4 +46,18 @@ function declineLevel() {
         .then(data => {
             alert(data);
         }).catch(error => console.error(error))
+}
+
+function showImages() {
+    imageList.innerHTML = "";
+    try {
+        let _d = JSON.parse(levelData);
+        _d.data.forEach(q => {
+            if (q.image != "") {
+                imageList.innerHTML += `<img scr="${q.image}"><br>`
+            }
+        });
+    } catch {
+        console.log("error en las imágenes.")
+    }
 }
