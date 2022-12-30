@@ -35,6 +35,7 @@ const removeQuestion = () => {
 
 const submitQuiz = (e) => {
     e.preventDefault();
+    if (questionNumber < 5) return alert("El quiz debe tener como mínimo 5 preguntas.");
     const quizName = document.getElementById('quizName').value;
     if (quizName == "") return alert("Debe completar todos los campos para continuar.");
     const quizData = [];
