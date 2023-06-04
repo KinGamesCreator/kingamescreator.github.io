@@ -1,0 +1,297 @@
+@import url("https://fonts.googleapis.com/css2?family=DotGothic16&family=Lato:wght@400;700;900&family=Montserrat:wght@400;500;700&family=VT323&display=swap");
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-width: 300px;
+  color: #fff;
+  font-family: "Lato", sans-serif;
+}
+
+@keyframes bg-anim {
+  0% {
+    background-position: 0 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+@keyframes gd-color {
+  0% {
+    background-position: 0 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
+  }
+}
+@keyframes circle-rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  30%, 90% {
+    transform: rotate(360deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+@keyframes escalado {
+  0% {
+    rotate: -8deg;
+    translate: -5px 0;
+  }
+  50% {
+    rotate: 16deg;
+    translate: 10px 0;
+  }
+  100% {
+    rotate: -8deg;
+    translate: -5px 0;
+  }
+}
+@keyframes up-down {
+  0% {
+    transform: translateY(-25%);
+  }
+  100% {
+    transform: translateY(1%);
+  }
+}
+.container {
+  width: 100%;
+}
+
+.porta {
+  width: 100%;
+  height: auto;
+  background-image: url("../source/background-ai.jpeg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+  min-width: 300px;
+  min-height: 100vh;
+}
+.porta__container {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: column;
+}
+.porta__logo {
+  width: 100%;
+  height: auto;
+  background: rgba(73, 156, 165, 0.35);
+  background: linear-gradient(45deg, rgba(73, 156, 165, 0.35), rgba(46, 200, 211, 0.35), rgba(58, 94, 134, 0.35), rgba(123, 33, 141, 0.38));
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: column;
+  max-height: 640px;
+  position: relative;
+  background-size: 200%;
+  animation: bg-anim 8s ease-in-out infinite;
+  animation-delay: 1s;
+}
+.porta__img {
+  width: clamp(30%, 3vw, 50%);
+  height: auto;
+  max-width: 260px;
+  margin-top: 22px;
+  filter: drop-shadow(1px 1px 10px #111);
+  animation: circle-rotate 5s linear infinite 1s;
+}
+.porta__title {
+  font-family: "VT323", monospace;
+  font-size: clamp(38px, 8vw, 64px);
+  font-weight: 700;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  letter-spacing: 0.05rem;
+  margin-bottom: 4px;
+  animation: escalado 3.3s ease-out infinite;
+  animation-delay: 1s;
+  transform: rotate(-7deg);
+}
+.porta__subtitle {
+  font-family: "Montserrat", sans-serif;
+  font-size: clamp(16.2px, 3vw, 22.2px);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-align: center;
+  padding-top: 10px;
+  padding-bottom: 20px;
+}
+.porta hr {
+  height: 7px;
+  width: 100%;
+  border: none;
+  background-color: #fff;
+}
+.porta__desc {
+  width: 100%;
+  height: auto;
+  font-family: "Lato", sans-serif;
+  font-size: clamp(19px, 3vw, 22px);
+  font-weight: 500;
+  min-width: 280px;
+  text-align: center;
+  margin: 0 auto;
+  padding: 16px clamp(1.125rem, 3vw, 10px);
+}
+.porta__btn {
+  width: 50%;
+  height: clamp(40px, 4vw, 70px);
+  display: inline-block;
+  justify-content: end;
+  align-items: center;
+  flex-direction: row;
+  min-width: 240px;
+  max-width: 350px;
+  text-align: center;
+  border: 1px solid #fff;
+  border-radius: 8px;
+  box-shadow: 8px 8px 9px 2px black;
+  transition: all 625ms;
+  margin-bottom: 1rem;
+}
+.porta__btn i {
+  color: #fff;
+  font-size: clamp(3.25rem, 8vw, 4.5rem);
+  animation: up-down 2s linear infinite alternate;
+}
+.porta__btn:hover {
+  width: 230px;
+  background: linear-gradient(45deg, rgb(53, 28, 110), rgba(45, 146, 133, 0.75), rgb(58, 94, 134), rgb(47, 44, 226));
+  background-size: 200%;
+  border-radius: 20px;
+  cursor: pointer;
+  animation: gd-color 6s ease-in-out infinite;
+}
+.porta__btn:hover i {
+  animation-play-state: paused;
+}
+
+.card {
+  width: 100%;
+  height: auto;
+  background-image: url("../source/fnf-ai-final.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+  min-height: 100vh;
+  display: flex;
+  position: relative;
+  justify-content: center;
+  align-items: center;
+  z-index: 0;
+  padding: 40px 0;
+}
+.card .shadow {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(2.2px);
+  z-index: -1;
+}
+.card__container {
+  width: auto;
+  height: auto;
+  display: grid;
+  justify-content: center;
+  grid-template-columns: repeat(2, clamp(100px, 20vw, 180px));
+  grid-auto-rows: clamp(100px, 20vw, 180px);
+  gap: 18px;
+  border: 3px solid #fff;
+  border-radius: 5px;
+  padding: clamp(20px, 3vw, 30px);
+}
+.card__item {
+  width: 100%;
+  height: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  font-family: "Lato", sans-serif;
+  font-size: clamp(19px, 3vw, 22px);
+  font-weight: 600;
+  border: 3px solid #fff;
+  border-radius: 16px;
+  color: #fff;
+  text-decoration: none;
+  transition: all 400ms;
+}
+.card__item img {
+  width: 55%;
+  margin-bottom: 10px;
+  transition: all 800ms;
+}
+.card__item p {
+  padding: 0 10px;
+}
+.card__item:hover {
+  border: 1px solid #fff;
+  background: linear-gradient(160deg, #37a4ac, #2a397e, #b853b8);
+  background-size: 250%;
+  animation: gd-color 4s ease-in-out infinite;
+}
+.card__item:hover img {
+  transform: scale(1.1);
+}
+
+.creator {
+  display: none;
+  position: fixed;
+  left: 5px;
+  top: 90vh;
+  width: 50px;
+  opacity: 0.5;
+  transition: all 300ms;
+}
+.creator img {
+  width: 100%;
+  border-radius: 30px;
+}
+.creator:hover {
+  opacity: 1;
+  left: 10px;
+  transform: scale(1.2);
+}
+
+@media (max-width: 500px) {
+  .main {
+    background-position: 100px;
+  }
+  .creator {
+    display: none;
+  }
+}
+@media (min-width: 501px) {
+  .card__container {
+    grid-template-columns: repeat(3, clamp(100px, 20vw, 180px));
+  }
+  .creator {
+    display: block;
+  }
+}/*# sourceMappingURL=style.css.map */

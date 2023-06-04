@@ -1,0 +1,247 @@
+@use 'reset';
+@use 'variable';
+@use 'function';
+@use 'animation';
+
+
+// ==== Contenedor principal de la pagina ==== //
+.container {
+  width: 100%;
+}
+
+// ==== Funciones ==== /
+@mixin extent($width, $height) {
+  width: $width;
+  height: $height;
+}
+
+@mixin background-color($color: variable.$color-1, $opacity:1) {
+  background-color: rgba($color, $opacity);
+}
+@mixin background-grandient () {
+  background: variable.$color-2;
+  background: linear-gradient(45deg, variable.$color-2,rgba(46, 200, 211, 0.35), variable.$color-3, rgba(123, 33, 141, 0.38));
+}
+
+
+
+
+// ==== Portada ==== //
+.porta {
+  @include extent(100%, auto);
+  @include function.background('../source/background-ai.jpeg');
+  min-width: 300px;
+  min-height: 100vh;
+
+  // ==== Contenedor de la pagina de Inicio ==== //
+  &__container {
+    width: 100%;
+    @include function.display(flex, space-between, center, column);
+  }
+
+  // ==== Contenedor del logo ==== //
+  &__logo {
+    @include extent(100%, auto);
+    @include background-grandient();
+    @include function.display(flex, space-between, center, column);
+    max-height: 640px;
+    position: relative;
+    background-size: 200%;
+    animation: bg-anim 8s ease-in-out infinite;
+    animation-delay: 1s;
+  }
+  &__img {
+    @include extent(clamp(30%, 3vw, 50%), auto);
+    max-width: 260px;
+    margin-top: 22px;
+    filter: drop-shadow(1px 1px 10px #111);
+    animation: circle-rotate 5s  linear infinite 1s;
+  }
+  &__title {
+    @include function.fonts(variable.$vt323, clamp(38px, 8vw, 64px), 700);
+    @include function.no-select();
+    letter-spacing: 0.05rem;
+    margin-bottom: 4px;
+    animation: escalado 3.3s ease-out infinite;
+    animation-delay: 1s;
+    transform: rotate(-7deg);
+  }
+  &__subtitle {
+    @include function.fonts(variable.$montserrat, variable.$font-medium, 600);
+    letter-spacing: .5px;
+    text-align: center;
+    padding-top: 10px;
+    padding-bottom: 20px; 
+  }
+  hr {
+    height: 7px;
+    width: 100%;
+    border: none;
+    background-color: variable.$text;
+  }
+
+
+
+
+
+  // ==== Descripcion / Resumen de la persona ==== //
+  &__desc {
+    @include extent(100%, auto);
+    @include function.fonts(variable.$lato, variable.$font-small, 500);
+    min-width: 280px;
+    text-align: center;
+    margin: 0 auto;
+    padding: 16px clamp(1.125rem, 3vw, 10px);
+  }
+
+  // ==== Boton ==== //
+  &__btn {
+    @include extent(50%, clamp(40px, 4vw,70px));
+    @include function.display(inline-block, end, center);
+    min-width: 240px;
+    max-width: 350px;
+    text-align: center;
+    border: 1px solid variable.$text;
+    border-radius: 8px;
+    box-shadow: 8px 8px 9px 2px rgba(variable.$color-1, 1);
+    transition: all 625ms;
+    margin-bottom: 1rem;
+
+    i {
+      color: variable.$text;
+      font-size: clamp(3.25rem, 8vw, 4.5rem);
+      animation: up-down 2s linear infinite alternate;
+    }
+
+    &:hover {
+      width: calc(350px - 120px);
+      background: linear-gradient(45deg, rgb(53, 28, 110), rgba(45, 146, 133, .75), rgb(58, 94, 134), rgb(47, 44, 226));
+      background-size: 200%;
+      border-radius: 20px;
+      cursor: pointer;
+      animation: gd-color 6s ease-in-out infinite;
+
+      i {
+        animation-play-state: paused;
+      }
+    }
+  }
+}
+
+
+// ==== Tarjetas ==== //
+
+.card {
+  @include extent(100%, auto);
+  @include function.background('../source/fnf-ai-final.png');
+  min-height: 100vh;
+  display: flex;
+  position: relative;
+  justify-content: center;
+  align-items: center;
+  z-index: 0;
+  padding: 40px 0;
+
+  // ==== Efecto que se le aplica al fondo de las tarjetas ==== //
+  .shadow {
+    position: absolute;
+    left: 0;
+    top: 0;
+    @include extent(100%, 100%);
+    background-color: rgba(variable.$color-1, $alpha: .40);
+    backdrop-filter: blur(2.2px);
+    z-index: -1;
+  }
+
+  // ==== Contenedor de las tarjetas ==== //
+  &__container {
+    @include extent(auto , auto);
+    display: grid;
+    justify-content: center;
+    grid-template-columns: repeat(2, clamp(100px, 20vw , 180px));
+    grid-auto-rows: clamp(100px, 20vw , 180px);
+    gap:  18px; 
+    border: 3px solid variable.$text;
+    border-radius: 5px;
+    padding: clamp(20px, 3vw, 30px);
+  }
+
+
+  // ==== Cards items ==== //
+  &__item {
+    @include extent(100%, auto);
+    @include function.display(flex, center, center, column);
+    @include function.fonts(variable.$lato, variable.$font-small, 600);
+    border:  3px solid variable.$text;
+    border-radius: 16px;
+    color: variable.$text;
+    text-decoration: none;
+    transition: all 400ms;
+    
+    img {
+      width: 55%;
+      margin-bottom: 10px;
+      transition: all 800ms;
+    }
+    p {
+      padding: 0 10px;
+    }
+
+    &:hover {
+      border: 1px solid variable.$text;
+      background: linear-gradient(160deg, #37a4ac,#2a397e, #b853b8);
+      background-size: 250%;
+      animation: gd-color 4s ease-in-out infinite;
+
+      img {
+        transform: scale(1.1);
+      }
+    }
+  }
+}
+
+
+.creator {
+  display: none;
+  position: fixed;
+  left: 5px;
+  top: 90vh;
+  width: 50px;
+  opacity: .5;
+  transition: all 300ms;
+  img {
+    width: 100%;
+    border-radius: 30px;
+  }
+
+  &:hover {
+    opacity: 1;
+    left: 10px;
+    transform: scale(1.2);
+  }
+}
+
+
+
+// ==== Responsive Desing ==== //
+@media (max-width: 500px) {
+  .main {
+    background-position: 100px;
+  }
+
+  .creator {
+    display: none;
+  }
+}
+
+@media(min-width: 501px) {
+  .card__container {
+    grid-template-columns: repeat(3, clamp(100px, 20vw , 180px));
+  }
+
+  .creator {
+    display: block;
+  }
+}
+
+

@@ -1,0 +1,69 @@
+@keyframes bg-anim {
+  0% {
+    background-position: 0 50%;
+  }
+
+  50% {
+    background-position: 100%  50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes gd-color {
+  0% {
+    background-position: 0 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0 50%;
+  }
+  
+}
+
+@keyframes circle-rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  30%, 90% {
+    transform: rotate(360deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes escalado {
+  0% {
+    rotate: -8deg;
+    translate: -5px 0;
+  }
+
+  50% {
+    rotate: 16deg;
+    translate: 10px 0;
+  }
+
+  100% {
+    rotate: -8deg;
+    translate: -5px 0;
+  }
+
+}
+
+@keyframes up-down {
+  0% {
+    transform: translateY(-25%);
+  }
+
+  100% {
+    transform: translateY(1%);
+  }
+}

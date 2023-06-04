@@ -1,0 +1,15 @@
+@use 'variable';
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+html {
+  scroll-behavior: smooth;
+}
+body {
+  min-width: 300px;
+  color: variable.$text;
+  font-family: variable.$lato;
+}

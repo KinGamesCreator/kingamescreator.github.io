@@ -1,0 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=DotGothic16&family=Lato:wght@400;700;900&family=Montserrat:wght@400;500;700&family=VT323&display=swap');
+
+// ==== fonts ==== //
+$lato: 'Lato', sans-serif;
+$montserrat: 'Montserrat', sans-serif;
+$vt323: 'VT323', monospace;
+$dot:'DotGothic16', sans-serif;
+
+// ==== fonts-sizes ==== //
+$font-small: clamp(19px, 3vw , 22px);
+$font-medium: clamp(16.2px, 3vw, 22.2px);
+$font-big: clamp(32px, 4vw, 52px);
+
+// ==== Colors ==== //
+$text: #fff;
+$color-1: #000;
+$color-2: rgba(73, 156, 165, 0.35);
+$color-3: rgba(58, 94, 134, .35);
+
