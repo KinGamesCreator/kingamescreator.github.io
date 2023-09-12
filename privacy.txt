@@ -1,0 +1,25 @@
+Política de Privacidad - Última actualización: 12/09/2023
+
+Bienvenido a KinGamesCreator. Esta política de privacidad tiene como objetivo proporcionarte información importante sobre cómo recopilamos y utilizamos tus datos personales en nuestras aplicaciones, que se basan en el servicio de publicidad AdMob de Google.
+
+Recopilación de Datos:
+
+Cuando utilizas nuestras aplicaciones, podemos recopilar tu Identificador de Publicidad Móvil (IDFA en dispositivos Apple o AAID en dispositivos Android). Estos identificadores son técnicos y se utilizan para fines de publicidad a través de AdMob. Puedes restablecer o borrar estos identificadores en la configuración de tu dispositivo en cualquier momento.
+
+Uso de los Datos:
+
+Los datos recopilados se utilizan exclusivamente para proporcionar publicidad relevante en nuestras aplicaciones a través de AdMob. No compartimos tus datos con terceros, excepto con Google AdMob, que es nuestro socio de publicidad. Te recomendamos revisar la política de privacidad de Google AdMob en https://policies.google.com/privacy para obtener más información sobre sus prácticas de privacidad.
+
+Consentimiento:
+
+Al utilizar nuestras aplicaciones, consientes la recopilación y el uso de tu Identificador de Publicidad Móvil para fines publicitarios a través de AdMob. Puedes cambiar tus preferencias de seguimiento de anuncios en la configuración de tu dispositivo.
+
+Derechos del Usuario:
+
+Tienes derecho a acceder a la información que tenemos sobre ti y a solicitar su eliminación si así lo deseas. Para ejercer estos derechos, puedes ponerse en contacto con nosotros en kingames.contacto@gmail.com
+
+Contacto:
+
+Si tienes alguna pregunta o inquietud sobre esta política de privacidad, no dudes en ponerte en contacto con nosotros en kingames.contacto@gmail.com
+
+Gracias por utilizar nuestras aplicaciones.
