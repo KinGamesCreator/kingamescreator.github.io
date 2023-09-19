@@ -1,18 +1,18 @@
-Política de Privacidad - Última actualización: 12/09/2023
+Política de Privacidad - Última actualización: 19/09/2023
 
-Bienvenido a KinGamesCreator. Esta política de privacidad tiene como objetivo proporcionarte información importante sobre cómo recopilamos y utilizamos tus datos personales en nuestras aplicaciones, que se basan en el servicio de publicidad AdMob de Google.
+Bienvenido a KinGamesCreator. Esta política de privacidad tiene como objetivo proporcionarte información importante sobre cómo recopilamos y utilizamos tus datos personales en nuestras aplicaciones, que se basan en el servicio de publicidad AdMob de Google, así como en Yandex Ads.
 
 Recopilación de Datos:
 
-Cuando utilizas nuestras aplicaciones, podemos recopilar tu Identificador de Publicidad Móvil (IDFA en dispositivos Apple o AAID en dispositivos Android). Estos identificadores son técnicos y se utilizan para fines de publicidad a través de AdMob. Puedes restablecer o borrar estos identificadores en la configuración de tu dispositivo en cualquier momento.
+Cuando utilizas nuestras aplicaciones, podemos recopilar tu Identificador de Publicidad Móvil (IDFA en dispositivos Apple o AAID en dispositivos Android). Estos identificadores son técnicos y Yandex Ads. Estos identificadores son técnicos y se utilizan para personalizar la publicidad en nuestras aplicaciones. Puedes restablecer o borrar estos identificadores en la configuración de tu dispositivo en cualquier momento.
 
 Uso de los Datos:
 
-Los datos recopilados se utilizan exclusivamente para proporcionar publicidad relevante en nuestras aplicaciones a través de AdMob. No compartimos tus datos con terceros, excepto con Google AdMob, que es nuestro socio de publicidad. Te recomendamos revisar la política de privacidad de Google AdMob en https://policies.google.com/privacy para obtener más información sobre sus prácticas de privacidad.
+Los datos recopilados se utilizan exclusivamente para proporcionar publicidad relevante en nuestras aplicaciones a través de AdMob y Yandex Ads. No compartimos tus datos con terceros, excepto con Google AdMob y Yandex Ads, que son nuestros socios de publicidad. Te recomendamos revisar las políticas de privacidad de Google AdMob en https://policies.google.com/privacy y de Yandex Ads en https://yandex.com/legal/confidential para obtener más información sobre sus prácticas de privacidad.
 
 Consentimiento:
 
-Al utilizar nuestras aplicaciones, consientes la recopilación y el uso de tu Identificador de Publicidad Móvil para fines publicitarios a través de AdMob. Puedes cambiar tus preferencias de seguimiento de anuncios en la configuración de tu dispositivo.
+Al utilizar nuestras aplicaciones, consientes la recopilación y el uso de tu Identificador de Publicidad Móvil para fines publicitarios a través de AdMob y Yandex Ads. Puedes cambiar tus preferencias de seguimiento de anuncios en la configuración de tu dispositivo.
 
 Derechos del Usuario:
 
