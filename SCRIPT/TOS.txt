@@ -1,0 +1,37 @@
+Términos de Servicio de SCRIPT
+
+Actualizado el 3/10/2023
+
+I. Introducción
+
+Bienvenido a SCRIPT, un bot multifunción para Discord creado y mantenido por KinGamesCreator (en adelante, "el Creador"). Estos términos de servicio (en adelante, "los Términos") rigen el uso de SCRIPT y establecen las condiciones bajo las cuales los usuarios pueden utilizar el bot.
+
+II. Uso del Bot
+
+Propósito del Bot: SCRIPT ofrece comandos de moderación, entretenimiento y herramientas generales para los servidores de Discord. Los usuarios son libres de utilizar el bot para diversos fines, siempre y cuando no intenten dañarlo o utilizarlo de manera maliciosa.
+
+Datos Recopilados: SCRIPT recopila únicamente las IDs necesarias para guardar configuraciones de permisos y proporcionar funcionalidades. No se recopilan datos personales de los usuarios.
+
+Privacidad: Cada servidor que utiliza SCRIPT tendrá acceso únicamente a sus propios datos, a excepción de valores globales como rankings en minijuegos, si están disponibles.
+
+III. Mal Uso y Sanciones
+
+Mal Uso: Cualquier mal uso de SCRIPT, incluyendo pero no limitándose a la explotación de errores o comportamiento malicioso, no será tolerado.
+
+Sanciones: En caso de un mal uso del bot, el Creador se reserva el derecho de prohibir el acceso de los responsables. Esto significa que el bot no responderá a las solicitudes de los usuarios o servidores sancionados.
+
+IV. Soporte
+
+Para ponerse en contacto con el Creador en caso de preguntas o problemas relacionados con el bot, los usuarios pueden enviar un correo electrónico a la siguiente dirección: kingames.contacto@gmail.com.
+
+V. Cambios en los Términos
+
+En caso de realizar cambios en estos Términos, SCRIPT notificará a los usuarios de los cambios en su estado de perfil "Nuevos Términos". Se recomienda a los usuarios revisar periódicamente estos Términos para mantenerse informados sobre cualquier actualización.
+
+VI. Conclusión
+
+Al utilizar SCRIPT, los usuarios aceptan estos Términos de Servicio. El incumplimiento de estos términos puede resultar en sanciones, incluyendo la prohibición del acceso al bot.
+
+Si tienes alguna pregunta o inquietud relacionada con estos términos, por favor, ponte en contacto con el Creador a través del correo electrónico proporcionado anteriormente.
+
+Gracias por utilizar SCRIPT y disfrutar de sus funcionalidades en tu servidor de Discord.
