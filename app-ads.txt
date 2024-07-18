@@ -730,3 +730,4 @@ video.unrulymedia.com, 322585001, RESELLER
 adiiix.com, 3de5db9, RESELLER
 fromthetop.io, 65529, RESELLER
 wortise.com, 89119f4e-7d02-4291-963e-49dd562bbb10, DIRECT
+wortise.com, c44ddb94-ab0d-42c3-89d2-f0a20262d36a, DIRECT
