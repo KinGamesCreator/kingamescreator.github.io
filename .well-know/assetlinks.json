@@ -1,0 +1,9 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.company.gametest",
+    "sha256_cert_fingerprints":
+   ["D4:D5:7D:41:0D:DA:4E:FD:72:EF:96:5C:5B:14:9F:CA:2D:AC:32:2A:DD:75:65:6D:6C:48:B2:3F:55:26:90:9D"]
+  }
+}]
