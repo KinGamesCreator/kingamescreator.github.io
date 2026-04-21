@@ -1659,3 +1659,7 @@ pangleglobal.com, 5005768, DIRECT
 pubmatic.com, 161490, RESELLER, 5d62403b186f2ace
 wortise.com, 89119f4e-7d02-4291-963e-49dd562bbb10, DIRECT
 wortise.com, c44ddb94-ab0d-42c3-89d2-f0a20262d36a, DIRECT
+
+
+# ADMOB #
+google.com, pub-7400451494058567, DIRECT, f08c47fec0942fa0
