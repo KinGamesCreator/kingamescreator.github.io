@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>WebSpriteMaps</title>
+<style>
+  :root{--bg:#14161c;--panel:#1c1f28;--panel2:#252934;--border:#353b48;--text:#e6e8ee;--muted:#8a92a3;--accent:#6c8eff;--accent2:#50e3a4;--danger:#ff5d5d}
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;height:100%;background:var(--bg);color:var(--text);font:14px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;overflow:hidden}
+  header{display:flex;align-items:center;gap:12px;padding:10px 16px;height:50px;background:var(--panel);border-bottom:1px solid var(--border)}
+  header .logo{font-weight:700;font-size:16px;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  header .sub{color:var(--muted);font-size:12px}
+  main{display:grid;grid-template-columns:320px 1fr;height:calc(100% - 50px)}
+  aside{background:var(--panel);border-right:1px solid var(--border);overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:14px}
+  .section{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:12px}
+  .section h3{margin:0 0 10px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+  .file-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+  .file-row:last-child{margin-bottom:0}
+  .file-label{width:90px;font-size:12px;color:var(--muted);flex-shrink:0}
+  .file-status{flex:1;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .file-status.empty{color:var(--muted);font-style:italic}
+  .file-status.ok::before{content:"✓ ";color:var(--accent2)}
+  .btn{background:var(--accent);color:#fff;border:none;border-radius:6px;padding:8px 12px;font-size:13px;cursor:pointer;font-weight:500}
+  .btn:hover{filter:brightness(1.15)}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .btn.secondary{background:var(--panel2);border:1px solid var(--border)}
+  .btn.small{padding:4px 10px;font-size:12px}
+  .btn-row{display:flex;gap:8px;flex-wrap:wrap}
+  input[type=file]{display:none}
+  .anim-list{max-height:320px;overflow-y:auto;display:flex;flex-direction:column;gap:4px}
+  .anim-item{padding:8px 10px;border-radius:6px;background:var(--panel);cursor:pointer;font-size:13px;border:1px solid transparent;display:flex;justify-content:space-between;align-items:center}
+  .anim-item:hover{background:#2c3142}
+  .anim-item.active{background:rgba(108,142,255,.15);border-color:var(--accent);color:var(--accent)}
+  .anim-item .frames{font-size:11px;color:var(--muted)}
+  .anim-item.active .frames{color:var(--accent)}
+  section.stage-area{position:relative;display:flex;flex-direction:column;overflow:hidden}
+  .stage-toolbar{display:flex;align-items:center;gap:12px;padding:10px 16px;flex-wrap:wrap;background:var(--panel);border-bottom:1px solid var(--border)}
+  .stage-toolbar .group{display:flex;align-items:center;gap:6px}
+  .stage-toolbar label{font-size:12px;color:var(--muted)}
+  .stage-toolbar input[type=range]{width:200px}
+  .stage-toolbar input[type=number]{width:70px;background:var(--panel2);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:4px 6px}
+  .stage-toolbar input[type=color]{width:32px;height:28px;background:transparent;border:1px solid var(--border);border-radius:4px;cursor:pointer;padding:2px}
+  .stage-toolbar select{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:5px 8px;border-radius:4px}
+  .stage-canvas-wrap{flex:1;position:relative;overflow:auto;background:linear-gradient(45deg,#2a2e38 25%,transparent 25%),linear-gradient(-45deg,#2a2e38 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#2a2e38 75%),linear-gradient(-45deg,transparent 75%,#2a2e38 75%);background-size:20px 20px;background-position:0 0,0 10px,10px -10px,-10px 0;background-color:#20232c;display:flex;align-items:center;justify-content:center}
+  .stage-canvas-wrap.solid-bg{background:var(--stage-bg,#999) !important}
+  #stage{box-shadow:0 4px 30px rgba(0,0,0,.6)}
+  .frame-info{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .toggle{display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none;font-size:12px;color:var(--muted)}
+  .toggle input{margin:0}
+  .help{font-size:11px;color:var(--muted);line-height:1.5}
+  .drop-overlay{position:fixed;inset:0;background:rgba(20,22,28,.85);display:none;align-items:center;justify-content:center;z-index:999;border:4px dashed var(--accent)}
+  .drop-overlay.active{display:flex}
+  .drop-overlay .msg{background:var(--panel);padding:30px 40px;border-radius:12px;font-size:18px;border:1px solid var(--accent)}
+  .error-banner{background:var(--danger);color:#fff;padding:8px 12px;border-radius:6px;font-size:12px;margin-top:8px}
+  .export-overlay{position:absolute;inset:0;background:rgba(20,22,28,.85);display:none;align-items:center;justify-content:center;z-index:10}
+  .export-overlay.active{display:flex}
+  .export-msg{background:var(--panel);padding:24px 30px;border-radius:12px;min-width:320px;border:1px solid var(--border);text-align:center}
+  .export-msg .big{font-size:16px;margin-bottom:12px}
+  .export-progress-bar{height:8px;background:var(--panel2);border-radius:4px;overflow:hidden;margin-bottom:8px}
+  #export-progress-fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .1s}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">WebSpriteMaps</div>
+  <div class="sub">Adobe Animate (BTA) Atlas Player — para FNF / HaxeFlixel assets</div>
+</header>
+
+<main>
+  <aside>
+    <div class="section">
+      <h3>1. Cargar Archivos</h3>
+      <div class="file-row"><div class="file-label">Spritemap PNG</div><div class="file-status empty" id="status-png">no cargado</div></div>
+      <div class="file-row"><div class="file-label">Spritemap JSON</div><div class="file-status empty" id="status-sm">no cargado</div></div>
+      <div class="file-row"><div class="file-label">Animation.json</div><div class="file-status empty" id="status-anim">no cargado</div></div>
+      <div class="btn-row" style="margin-top:10px">
+        <button class="btn small" id="btn-folder">Seleccionar Carpeta</button>
+        <button class="btn small secondary" id="btn-files">Archivos Sueltos</button>
+      </div>
+      <div class="help" style="margin-top:8px">O arrastra y suelta los 3 archivos en cualquier parte.</div>
+      <input type="file" id="input-folder" webkitdirectory directory multiple>
+      <input type="file" id="input-files" multiple accept=".png,.json">
+      <div id="error-area"></div>
+    </div>
+
+    <div class="section">
+      <h3>2. Animaciones</h3>
+      <div class="anim-list" id="anim-list">
+        <div class="help" style="padding:10px">Carga los archivos para ver las animaciones.</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>Información</h3>
+      <div class="help" id="info-area"><div>Estado: <span id="info-state">esperando archivos…</span></div></div>
+    </div>
+  </aside>
+
+  <section class="stage-area">
+    <div class="stage-toolbar">
+      <div class="group">
+        <button class="btn small" id="btn-play">▶ Play</button>
+        <button class="btn small secondary" id="btn-pause">⏸ Pausa</button>
+        <button class="btn small secondary" id="btn-prev">⏮</button>
+        <button class="btn small secondary" id="btn-next">⏭</button>
+      </div>
+      <div class="group">
+        <label>Frame</label>
+        <input type="range" id="frame-slider" min="0" max="0" value="0">
+        <span class="frame-info" id="frame-display">0 / 0</span>
+      </div>
+      <div class="group"><label>FPS</label><input type="number" id="fps-input" min="1" max="120" value="24"></div>
+      <div class="group"><label>Zoom</label>
+        <select id="zoom-select">
+          <option value="0.25">25%</option><option value="0.5">50%</option>
+          <option value="0.75">75%</option><option value="1" selected>100%</option>
+          <option value="1.5">150%</option><option value="2">200%</option>
+          <option value="fit">Ajustar</option>
+        </select>
+      </div>
+      <div class="group"><label>BG</label>
+        <input type="color" id="bg-color" value="#999999">
+        <label class="toggle"><input type="checkbox" id="checker-toggle" checked>Damero</label>
+      </div>
+      <div class="group">
+        <button class="btn small" id="btn-export" title="Exportar la animación seleccionada como ZIP de PNGs">⬇ Exportar ZIP</button>
+        <label class="toggle" title="Si está activado, cada PNG incluye el color de fondo"><input type="checkbox" id="export-bg-toggle">con BG</label>
+      </div>
+    </div>
+    <div class="stage-canvas-wrap" id="canvas-wrap">
+      <canvas id="stage" width="100" height="100"></canvas>
+      <div class="export-overlay" id="export-overlay">
+        <div class="export-msg">
+          <div class="big" id="export-status">Exportando…</div>
+          <div class="export-progress-bar"><div id="export-progress-fill"></div></div>
+          <div class="help" id="export-detail">0 / 0</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="drop-overlay" id="drop-overlay"><div class="msg">Suelta aquí los archivos (.png + 2 .json)</div></div>
+
+<script>
+"use strict";
+
+// =====================================================================
+// Adobe Animate Bitmap Texture Atlas (BTA) Player
+// Format reference: see https://github.com/MaybeMaru/flixel-animate
+// TRP is metadata only (not applied during render)
+// MX or M3D both supported. Color C: AM alpha multiplier approximated.
+// =====================================================================
+
+function getMX(el){
+  if(el.MX) return el.MX;
+  if(el.M3D){ const m=el.M3D; return [m[0],m[1],m[4],m[5],m[12],m[13]]; }
+  return [1,0,0,1,0,0];
+}
+
+// Map BTA blend mode int (B field) to Canvas2D globalCompositeOperation.
+// Reference: flixel-animate Blend.fromInt — alphabetical AS3 BlendMode order.
+// Note: B=0 (ADD) is treated as NORMAL because in practice many regular MC
+// instances ship with B=0 and the game shows them normally.
+function blendFromB(b){
+  if(b == null || b === 0 || b === 10) return null; // NORMAL
+  switch(b){
+    case 2:  return 'lighter'; // (DARKEN per spec, but "light effects" use ADD here)
+    case 3:  return 'difference';
+    case 4:  return 'destination-out'; // ERASE approx
+    case 5:  return 'hard-light';
+    case 8:  return 'lighten';
+    case 9:  return 'multiply';
+    case 11: return 'overlay';
+    case 12: return 'screen';
+    case 14: return 'lighter'; // SUBTRACT not native; closest "glow" approx
+    default: return null;
+  }
+}
+
+function loadImage(file){
+  return new Promise((resolve,reject)=>{
+    const img=new Image();
+    const url=URL.createObjectURL(file);
+    img.onload=()=>{URL.revokeObjectURL(url);resolve(img);};
+    img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('No se pudo cargar el PNG'));};
+    img.src=url;
+  });
+}
+
+class AtlasPlayer {
+  constructor(canvas){
+    this.canvas=canvas;
+    this.ctx=canvas.getContext('2d');
+    this.img=null;
+    this.spriteMap=new Map();
+    this.symbolMap=new Map();
+    this.animation=null;
+    this.fps=24;
+    this.bg='#999999';
+    this.currentFrame=0;
+    this.totalFrames=1;
+    this.rangeStart=0;
+    this.rangeEnd=1;
+    this.playing=false;
+    this.lastTime=0;
+    this.accumulator=0;
+    this._suspendRender=false;
+    // Translation applied before root M3D (set by setRange to fit content into canvas)
+    this.tx=0; this.ty=0;
+    // Canvas effective size (auto-fit per animation)
+    this.W=100; this.H=100;
+    this._loop=this._loop.bind(this);
+    requestAnimationFrame(this._loop);
+  }
+
+  async loadFromFiles(pngFile, smJsonFile, animJsonFile){
+    const [smText, animText, img] = await Promise.all([
+      smJsonFile.text(), animJsonFile.text(), loadImage(pngFile)
+    ]);
+    const stripBOM = s => s.charCodeAt(0)===0xFEFF ? s.slice(1) : s;
+    const sm = JSON.parse(stripBOM(smText));
+    const anim = JSON.parse(stripBOM(animText));
+    if(!sm.ATLAS || !sm.ATLAS.SPRITES) throw new Error('Spritemap JSON inválido');
+    if(!anim.AN || !anim.SD) throw new Error('Animation.json inválido');
+    this.spriteMap.clear();
+    for(const s of sm.ATLAS.SPRITES) this.spriteMap.set(s.SPRITE.name, s.SPRITE);
+    this.symbolMap.clear();
+    for(const s of (anim.SD.S || [])) this.symbolMap.set(s.SN, s);
+    this.animation = anim;
+    this.img = img;
+    this.fps = (anim.MD && anim.MD.FRT) || 24;
+    this.bg = (anim.MD && anim.MD.BGC) || '#999999';
+    this.totalFrames = this._computeTotalFrames();
+    this.rangeStart = 0;
+    this.rangeEnd = this.totalFrames;
+    this.currentFrame = 0;
+  }
+
+  _computeTotalFrames(){
+    let m=0;
+    for(const layer of this.animation.AN.TL.L)
+      for(const fr of layer.FR)
+        m=Math.max(m, (fr.I||0)+(fr.DU||1));
+    return m||1;
+  }
+
+  _symbolLength(sym){
+    let m=0;
+    for(const layer of sym.TL.L)
+      for(const fr of layer.FR)
+        m=Math.max(m, (fr.I||0)+(fr.DU||1));
+    return m||1;
+  }
+
+  _findFrameBlock(layer, frame){
+    for(const fr of layer.FR){
+      const I=fr.I||0, DU=fr.DU||1;
+      if(frame>=I && frame<I+DU) return fr;
+    }
+    return null;
+  }
+
+  getAnimations(){
+    if(!this.animation) return [];
+    const out=[], seen=new Set();
+    for(const layer of this.animation.AN.TL.L)
+      for(const fr of layer.FR)
+        if(fr.N && fr.N!=='None' && !seen.has(fr.N)){
+          seen.add(fr.N);
+          out.push({name:fr.N, start:fr.I||0, duration:fr.DU||1});
+        }
+    out.sort((a,b)=>a.start-b.start);
+    return out;
+  }
+
+  // ---- BBOX computation: walks frame range and tracks min/max in world coords
+  computeRangeBounds(start, end){
+    if(!this.animation) return null;
+    let minX=Infinity, minY=Infinity, maxX=-Infinity, maxY=-Infinity;
+
+    const root = this.animation.AN.STI && this.animation.AN.STI.SI;
+    const rootM = root ? getMX(root) : [1,0,0,1,0,0];
+
+    const self = this;
+    function mul(A, B){
+      return [
+        A[0]*B[0]+A[2]*B[1], A[1]*B[0]+A[3]*B[1],
+        A[0]*B[2]+A[2]*B[3], A[1]*B[2]+A[3]*B[3],
+        A[0]*B[4]+A[2]*B[5]+A[4], A[1]*B[4]+A[3]*B[5]+A[5]
+      ];
+    }
+    function applyP(M, x, y){ return [M[0]*x+M[2]*y+M[4], M[1]*x+M[3]*y+M[5]]; }
+
+    function walkASI(asi, M){
+      const sp = self.spriteMap.get(asi.N);
+      if(!sp) return;
+      const M2 = mul(M, getMX(asi));
+      // Sprite display dims (logical) are (sp.h, sp.w) if rotated, else (sp.w, sp.h)
+      const dw = sp.rotated ? sp.h : sp.w;
+      const dh = sp.rotated ? sp.w : sp.h;
+      const corners = [[0,0],[dw,0],[0,dh],[dw,dh]];
+      for(const [x,y] of corners){
+        const [wx, wy] = applyP(M2, x, y);
+        if(wx<minX) minX=wx; if(wx>maxX) maxX=wx;
+        if(wy<minY) minY=wy; if(wy>maxY) maxY=wy;
+      }
+    }
+    function walkSI(si, parentLocalFrame, M){
+      const sym = self.symbolMap.get(si.SN);
+      if(!sym) return;
+      const len = self._symbolLength(sym);
+      const FF = si.FF||0;
+      let cf;
+      switch(si.LP||'LP'){
+        case 'SF': case 'singleframe': cf=FF; break;
+        case 'PO': case 'playonce': cf=Math.min(FF+parentLocalFrame, len-1); break;
+        default: cf=(((FF+parentLocalFrame)%len)+len)%len;
+      }
+      const M2 = mul(M, getMX(si));
+      walkTimeline(sym.TL, cf, M2);
+    }
+    function walkTimeline(tl, frame, M){
+      for(let i=tl.L.length-1; i>=0; i--){
+        const layer=tl.L[i];
+        const block=self._findFrameBlock(layer, frame);
+        if(!block) continue;
+        const lf = frame - (block.I||0);
+        for(const el of (block.E||[])){
+          if(el.ASI) walkASI(el.ASI, M);
+          else if(el.SI) walkSI(el.SI, lf, M);
+        }
+      }
+    }
+
+    for(let f=start; f<end; f++){
+      walkTimeline(this.animation.AN.TL, f, rootM);
+    }
+    if(minX===Infinity) return null;
+    return {minX, minY, maxX, maxY};
+  }
+
+  setRange(start, end){
+    this.rangeStart = Math.max(0, Math.min(this.totalFrames-1, start));
+    this.rangeEnd   = Math.max(this.rangeStart+1, Math.min(this.totalFrames, end));
+    if(this.currentFrame<this.rangeStart || this.currentFrame>=this.rangeEnd)
+      this.currentFrame = this.rangeStart;
+    // Compute bbox of this range, set canvas size, and translation
+    const b = this.computeRangeBounds(this.rangeStart, this.rangeEnd);
+    if(b){
+      const PAD = 10;
+      const w = Math.max(1, Math.ceil(b.maxX - b.minX) + PAD*2);
+      const h = Math.max(1, Math.ceil(b.maxY - b.minY) + PAD*2);
+      this.W = w; this.H = h;
+      this.canvas.width = w;
+      this.canvas.height = h;
+      this.tx = -Math.floor(b.minX) + PAD;
+      this.ty = -Math.floor(b.minY) + PAD;
+    }
+  }
+
+  setFrame(f){ this.currentFrame = Math.max(this.rangeStart, Math.min(this.rangeEnd-1, f|0)); }
+  play(){ this.playing=true; this.accumulator=0; this.lastTime=0; }
+  pause(){ this.playing=false; }
+  toggle(){ this.playing ? this.pause() : this.play(); }
+  step(d){
+    let f = this.currentFrame + d;
+    while(f<this.rangeStart) f += (this.rangeEnd-this.rangeStart);
+    while(f>=this.rangeEnd)  f -= (this.rangeEnd-this.rangeStart);
+    this.currentFrame = f;
+  }
+
+  _loop(now){
+    if(this._suspendRender){ requestAnimationFrame(this._loop); return; }
+    if(this.animation && this.img){
+      if(!this.lastTime) this.lastTime=now;
+      const dt=now-this.lastTime; this.lastTime=now;
+      if(this.playing){
+        this.accumulator+=dt;
+        const fd=1000/this.fps;
+        while(this.accumulator>=fd){
+          this.accumulator-=fd;
+          this.currentFrame++;
+          if(this.currentFrame>=this.rangeEnd) this.currentFrame=this.rangeStart;
+        }
+      }
+      this.render();
+      if(typeof this.onTick==='function') this.onTick();
+    } else {
+      this.ctx.setTransform(1,0,0,1,0,0);
+      this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
+    }
+    requestAnimationFrame(this._loop);
+  }
+
+  render(opts){
+    opts = opts || {};
+    const ctx=this.ctx;
+    ctx.setTransform(1,0,0,1,0,0);
+    if(opts.backgroundColor){
+      ctx.fillStyle=opts.backgroundColor;
+      ctx.fillRect(0,0,this.W,this.H);
+    } else {
+      ctx.clearRect(0,0,this.W,this.H);
+    }
+    // Apply auto-fit translation, then root transform
+    ctx.translate(this.tx, this.ty);
+    const root = this.animation.AN.STI && this.animation.AN.STI.SI;
+    ctx.save();
+    if(root){
+      const M = getMX(root);
+      ctx.transform(M[0],M[1],M[2],M[3],M[4],M[5]);
+    }
+    this._renderTimeline(this.animation.AN.TL, this.currentFrame);
+    ctx.restore();
+  }
+
+  _renderTimeline(tl, frame){
+    const layers=tl.L;
+    for(let i=layers.length-1; i>=0; i--){
+      const layer=layers[i];
+      const block=this._findFrameBlock(layer, frame);
+      if(!block) continue;
+      const lf = frame - (block.I||0);
+      for(const el of (block.E||[])){
+        if(el.ASI) this._renderASI(el.ASI);
+        else if(el.SI) this._renderSI(el.SI, lf);
+      }
+    }
+  }
+
+  _renderASI(asi){
+    const sp=this.spriteMap.get(asi.N);
+    if(!sp) return;
+    const M=getMX(asi);
+    const ctx=this.ctx;
+    ctx.save();
+    ctx.transform(M[0],M[1],M[2],M[3],M[4],M[5]);
+    if(sp.rotated){
+      ctx.translate(0, sp.w);
+      ctx.rotate(-Math.PI/2);
+      ctx.drawImage(this.img, sp.x, sp.y, sp.w, sp.h, 0, 0, sp.w, sp.h);
+    } else {
+      ctx.drawImage(this.img, sp.x, sp.y, sp.w, sp.h, 0, 0, sp.w, sp.h);
+    }
+    ctx.restore();
+  }
+
+  _renderSI(si, parentLocalFrame){
+    const sym=this.symbolMap.get(si.SN);
+    if(!sym) return;
+    const len=this._symbolLength(sym);
+    const FF=si.FF||0;
+    let cf;
+    switch(si.LP||'LP'){
+      case 'SF': case 'singleframe': cf=FF; break;
+      case 'PO': case 'playonce': cf=Math.min(FF+parentLocalFrame, len-1); break;
+      default: cf=(((FF+parentLocalFrame)%len)+len)%len;
+    }
+    const M=getMX(si);
+    const ctx=this.ctx;
+    ctx.save();
+    ctx.transform(M[0],M[1],M[2],M[3],M[4],M[5]);
+    if(si.C){
+      const C=si.C;
+      let aMult=1;
+      if(C.M==='CA'||C.M==='Alpha'||C.M==='AD'||C.M==='Advanced')
+        aMult = (C.AM!=null) ? C.AM : 1;
+      if(aMult!==1) ctx.globalAlpha *= Math.max(0, Math.min(1, aMult));
+    }
+    const blend = blendFromB(si.B);
+    if(blend) ctx.globalCompositeOperation = blend;
+    this._renderTimeline(sym.TL, cf);
+    ctx.restore();
+  }
+}
+
+// ===== UI =====
+const canvas = document.getElementById('stage');
+const player = new AtlasPlayer(canvas);
+
+const els = {};
+['status-png','status-sm','status-anim','btn-folder','btn-files','input-folder','input-files','error-area',
+ 'anim-list','info-state','btn-play','btn-pause','btn-prev','btn-next','frame-slider','frame-display',
+ 'fps-input','zoom-select','bg-color','checker-toggle','canvas-wrap','drop-overlay','btn-export',
+ 'export-bg-toggle','export-overlay','export-status','export-progress-fill','export-detail']
+  .forEach(id => {
+    const k = id.replace(/-([a-z])/g, (_,c)=>c.toUpperCase());
+    els[k] = document.getElementById(id);
+  });
+
+let pending = {png:null, sm:null, anim:null};
+let activeAnim = null;
+let userIsScrubbing = false;
+
+function showError(msg){ els.errorArea.innerHTML = msg ? `<div class="error-banner">${msg}</div>` : ''; }
+function setStatus(slot, label, ok){
+  const el = slot==='png' ? els.statusPng : slot==='sm' ? els.statusSm : els.statusAnim;
+  el.textContent = label;
+  el.className = 'file-status ' + (ok?'ok':'empty');
+}
+
+function classifyFile(file){
+  const name = file.name.toLowerCase();
+  if(name.endsWith('.png')) return 'png';
+  if(!name.endsWith('.json')) return null;
+  return new Promise(resolve => {
+    const r = new FileReader();
+    r.onload = () => {
+      const head = String(r.result).slice(0, 1000);
+      if(head.includes('"ATLAS"') || head.includes('"SPRITES"')) resolve('sm');
+      else if(head.includes('"AN"') || head.includes('"SD"') || head.includes('"BTA')) resolve('anim');
+      else resolve(null);
+    };
+    r.onerror = () => resolve(null);
+    r.readAsText(file.slice(0, 2048));
+  });
+}
+
+async function ingestFiles(fileList){
+  showError('');
+  for(const f of Array.from(fileList)){
+    let kind = classifyFile(f);
+    if(kind && typeof kind.then === 'function') kind = await kind;
+    if(!kind) continue;
+    pending[kind] = f;
+    setStatus(kind, f.name, true);
+  }
+  if(pending.png && pending.sm && pending.anim){
+    try {
+      els.infoState.textContent = 'cargando…';
+      await player.loadFromFiles(pending.png, pending.sm, pending.anim);
+      onLoaded();
+    } catch(e){
+      console.error(e);
+      showError('Error: ' + (e && e.message || e));
+      els.infoState.textContent = 'error';
+    }
+  } else {
+    const missing = [];
+    if(!pending.png) missing.push('PNG');
+    if(!pending.sm) missing.push('spritemap.json');
+    if(!pending.anim) missing.push('Animation.json');
+    els.infoState.textContent = 'falta: ' + missing.join(', ');
+  }
+}
+
+function onLoaded(){
+  const anims = player.getAnimations();
+  els.animList.innerHTML = '';
+  if(anims.length === 0){
+    const div = document.createElement('div');
+    div.className = 'anim-item';
+    div.textContent = '(sin etiquetas — timeline completo)';
+    div.onclick = () => selectAnim(null);
+    els.animList.appendChild(div);
+  } else {
+    const all = document.createElement('div');
+    all.className = 'anim-item';
+    all.innerHTML = `<span>Timeline completo</span><span class="frames">${player.totalFrames}f</span>`;
+    all.onclick = () => selectAnim(null);
+    els.animList.appendChild(all);
+    for(const a of anims){
+      const div = document.createElement('div');
+      div.className = 'anim-item';
+      div.innerHTML = `<span>${a.name}</span><span class="frames">${a.duration}f</span>`;
+      div.onclick = () => selectAnim(a);
+      els.animList.appendChild(div);
+    }
+  }
+  els.fpsInput.value = player.fps;
+  els.bgColor.value = (player.bg || '#999999').slice(0,7);
+  applyBgColor();
+  if(anims.length > 0) selectAnim(anims[0]); else selectAnim(null);
+  player.play();
+  els.infoState.textContent =
+    `${player.fps}fps · ${player.totalFrames} frames · ${player.symbolMap.size} símbolos · ${player.spriteMap.size} sprites`;
+}
+
+function selectAnim(a){
+  activeAnim = a;
+  if(a) player.setRange(a.start, a.start + a.duration);
+  else player.setRange(0, player.totalFrames);
+  player.setFrame(player.rangeStart);
+  const items = els.animList.querySelectorAll('.anim-item');
+  items.forEach(it => it.classList.remove('active'));
+  if(!a){ if(items[0]) items[0].classList.add('active'); }
+  else items.forEach(it => {
+    if(it.firstChild && it.firstChild.textContent === a.name) it.classList.add('active');
+  });
+  els.frameSlider.min = player.rangeStart;
+  els.frameSlider.max = player.rangeEnd - 1;
+  els.frameSlider.value = player.currentFrame;
+  applyZoom();
+}
+
+function applyBgColor(){ els.canvasWrap.style.setProperty('--stage-bg', els.bgColor.value); }
+function applyChecker(){
+  if(els.checkerToggle.checked) els.canvasWrap.classList.remove('solid-bg');
+  else els.canvasWrap.classList.add('solid-bg');
+}
+function applyZoom(){
+  const z = els.zoomSelect.value;
+  if(z === 'fit'){
+    const wrap = els.canvasWrap.getBoundingClientRect();
+    const scale = Math.min(wrap.width / player.W, wrap.height / player.H) * 0.95;
+    canvas.style.width = (player.W * scale) + 'px';
+    canvas.style.height = (player.H * scale) + 'px';
+  } else {
+    const s = parseFloat(z);
+    canvas.style.width = (player.W * s) + 'px';
+    canvas.style.height = (player.H * s) + 'px';
+  }
+}
+
+// File pickers
+els.btnFolder.addEventListener('click', () => els.inputFolder.click());
+els.btnFiles.addEventListener('click', () => els.inputFiles.click());
+els.inputFolder.addEventListener('change', e => ingestFiles(e.target.files));
+els.inputFiles.addEventListener('change', e => ingestFiles(e.target.files));
+
+// Playback
+els.btnPlay.addEventListener('click', () => player.play());
+els.btnPause.addEventListener('click', () => player.pause());
+els.btnPrev.addEventListener('click', () => { player.pause(); player.step(-1); });
+els.btnNext.addEventListener('click', () => { player.pause(); player.step(1); });
+
+els.frameSlider.addEventListener('input', () => {
+  userIsScrubbing = true;
+  player.pause();
+  player.setFrame(parseInt(els.frameSlider.value, 10));
+});
+els.frameSlider.addEventListener('change', () => { userIsScrubbing = false; });
+
+els.fpsInput.addEventListener('change', () => {
+  const v = Math.max(1, Math.min(120, parseInt(els.fpsInput.value, 10) || 24));
+  player.fps = v; els.fpsInput.value = v;
+});
+
+els.zoomSelect.addEventListener('change', applyZoom);
+els.bgColor.addEventListener('input', applyBgColor);
+els.checkerToggle.addEventListener('change', applyChecker);
+window.addEventListener('resize', () => { if(els.zoomSelect.value === 'fit') applyZoom(); });
+
+window.addEventListener('keydown', (e) => {
+  if(!player.animation) return;
+  if(e.target.tagName === 'INPUT') return;
+  if(e.code === 'Space'){ e.preventDefault(); player.toggle(); }
+  else if(e.code === 'ArrowLeft'){ player.pause(); player.step(-1); }
+  else if(e.code === 'ArrowRight'){ player.pause(); player.step(1); }
+});
+
+// Drag-and-drop
+['dragenter','dragover'].forEach(t => window.addEventListener(t, (e) => {
+  if(e.dataTransfer && e.dataTransfer.types.includes('Files')){
+    e.preventDefault();
+    els.dropOverlay.classList.add('active');
+  }
+}));
+['dragleave','drop'].forEach(t => window.addEventListener(t, (e) => {
+  if(t === 'dragleave' && e.relatedTarget) return;
+  els.dropOverlay.classList.remove('active');
+}));
+window.addEventListener('drop', (e) => {
+  e.preventDefault();
+  els.dropOverlay.classList.remove('active');
+  if(e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length){
+    ingestFiles(e.dataTransfer.files);
+  }
+});
+
+player.onTick = () => {
+  if(!userIsScrubbing) els.frameSlider.value = player.currentFrame;
+  els.frameDisplay.textContent =
+    `${player.currentFrame - player.rangeStart} / ${player.rangeEnd - player.rangeStart - 1}` +
+    `  (global ${player.currentFrame})`;
+};
+
+// ZIP Export
+let JSZipPromise = null;
+function loadJSZip(){
+  if(window.JSZip) return Promise.resolve(window.JSZip);
+  if(JSZipPromise) return JSZipPromise;
+  JSZipPromise = new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+    s.onload = () => resolve(window.JSZip);
+    s.onerror = () => reject(new Error('No se pudo cargar JSZip'));
+    document.head.appendChild(s);
+  });
+  return JSZipPromise;
+}
+
+function sanitizeFilename(s){
+  return String(s).replace(/[^a-zA-Z0-9_\-]+/g, '_').replace(/^_+|_+$/g, '') || 'animation';
+}
+
+async function exportZip(){
+  if(!player.animation) return;
+  const wasPlaying = player.playing;
+  player.pause();
+  els.btnExport.disabled = true;
+  els.exportOverlay.classList.add('active');
+  els.exportStatus.textContent = 'Cargando JSZip…';
+  els.exportProgressFill.style.width = '0%';
+  els.exportDetail.textContent = '';
+  try {
+    const JSZip = await loadJSZip();
+    const zip = new JSZip();
+    player._suspendRender = true;
+    const startFrame = player.rangeStart;
+    const total = player.rangeEnd - startFrame;
+    const baseName = sanitizeFilename(activeAnim ? activeAnim.name : 'timeline');
+    const includeBg = els.exportBgToggle.checked;
+    const bgColor = includeBg ? els.bgColor.value : null;
+    const padLen = String(Math.max(0, total - 1)).length;
+    els.exportStatus.textContent = `Renderizando "${baseName}"…`;
+    for(let i = 0; i < total; i++){
+      player.setFrame(startFrame + i);
+      player.render({backgroundColor: bgColor});
+      const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
+      if(!blob) throw new Error('toBlob falló en frame ' + i);
+      zip.file(`${baseName}_${String(i).padStart(padLen, '0')}.png`, blob);
+      const pct = Math.round(((i+1)/total)*100);
+      els.exportProgressFill.style.width = pct + '%';
+      els.exportDetail.textContent = `${i+1} / ${total} frames`;
+      if((i & 7) === 0) await new Promise(r => setTimeout(r, 0));
+    }
+    els.exportStatus.textContent = 'Comprimiendo ZIP…';
+    els.exportDetail.textContent = '';
+    const out = await zip.generateAsync({type: 'blob'}, m => {
+      els.exportProgressFill.style.width = (m.percent | 0) + '%';
+      els.exportDetail.textContent = (m.percent | 0) + '%';
+    });
+    const url = URL.createObjectURL(out);
+    const a = document.createElement('a');
+    a.href = url; a.download = `${baseName}.zip`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+    els.exportStatus.textContent = '¡Listo!';
+    els.exportDetail.textContent = `${total} frames empaquetados`;
+    setTimeout(() => els.exportOverlay.classList.remove('active'), 700);
+  } catch(e){
+    console.error(e);
+    els.exportStatus.textContent = 'Error al exportar';
+    els.exportDetail.textContent = (e && e.message) || String(e);
+    setTimeout(() => els.exportOverlay.classList.remove('active'), 2200);
+  } finally {
+    player._suspendRender = false;
+    els.btnExport.disabled = false;
+    if(wasPlaying) player.play();
+  }
+}
+els.btnExport.addEventListener('click', exportZip);
+
+applyBgColor();
+applyChecker();
+</script>
+
+</body>
+</html>
+dChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+    els.exportStatus.textContent = '¡Listo!';
+    els.exportDetail.textContent = `${total} frames empaquetados`;
+    setTimeout(() => els.exportOverlay.classList.remove('active'), 700);
+  } catch(e){
+    console.error(e);
+    els.exportStatus.textContent = 'Error al exportar';
+    els.exportDetail.textContent = (e && e.message) || String(e);
+    setTimeout(() => els.exportOverlay.classList.remove('active'), 2200);
+  } finally {
+    player._suspendRender = false;
+    els.btnExport.disabled = false;
+    if(wasPlaying) player.play();
+  }
+}
+els.btnExport.addEventListener('click', exportZip);
+
+applyBgColor();
+applyChecker();
+</script>
+
+</body>
+</html>
+lyBgColor();
+applyChecker();
+</script>
+
+</body>
+</html>
