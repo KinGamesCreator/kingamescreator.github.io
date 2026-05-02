@@ -125,7 +125,8 @@
       </div>
       <div class="group">
         <button class="btn small" id="btn-export" title="Exportar la animación seleccionada como WebP animado lossless">⬇ Exportar WebP</button>
-        <label class="toggle" title="Si está activado, el WebP incluye el color de fondo (sin transparencia)"><input type="checkbox" id="export-bg-toggle">con BG</label>
+        <button class="btn small secondary" id="btn-export-zip" title="Exportar la animación seleccionada como ZIP de PNGs">⬇ Exportar ZIP</button>
+        <label class="toggle" title="Si está activado, la exportación incluye el color de fondo (sin transparencia)"><input type="checkbox" id="export-bg-toggle">con BG</label>
       </div>
     </div>
     <div class="stage-canvas-wrap" id="canvas-wrap">
@@ -466,7 +467,7 @@ const player = new AtlasPlayer(canvas);
 const els = {};
 ['status-png','status-sm','status-anim','btn-folder','btn-files','input-folder','input-files','error-area',
  'anim-list','info-state','btn-play','btn-pause','btn-prev','btn-next','frame-slider','frame-display',
- 'fps-input','zoom-select','bg-color','checker-toggle','canvas-wrap','drop-overlay','btn-export',
+ 'fps-input','zoom-select','bg-color','checker-toggle','canvas-wrap','drop-overlay','btn-export','btn-export-zip',
  'export-bg-toggle','export-overlay','export-status','export-progress-fill','export-detail']
   .forEach(id => {
     const k = id.replace(/-([a-z])/g, (_,c)=>c.toUpperCase());
@@ -783,6 +784,81 @@ async function exportWebP(){
   }
 }
 els.btnExport.addEventListener('click', exportWebP);
+
+// === ZIP Export (PNG frames) ===
+let _JSZipPromise = null;
+function _loadJSZip(){
+  if(window.JSZip) return Promise.resolve(window.JSZip);
+  if(_JSZipPromise) return _JSZipPromise;
+  _JSZipPromise = new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+    s.onload = () => resolve(window.JSZip);
+    s.onerror = () => reject(new Error('No se pudo cargar JSZip'));
+    document.head.appendChild(s);
+  });
+  return _JSZipPromise;
+}
+
+async function exportZip(){
+  if(!player.animation) return;
+  const wasPlaying = player.playing;
+  player.pause();
+  els.btnExport.disabled = true;
+  els.btnExportZip.disabled = true;
+  els.exportOverlay.classList.add('active');
+  els.exportStatus.textContent = 'Cargando JSZip…';
+  els.exportProgressFill.style.width = '0%';
+  els.exportDetail.textContent = '';
+  try {
+    const JSZip = await _loadJSZip();
+    const zip = new JSZip();
+    player._suspendRender = true;
+    const startFrame = player.rangeStart;
+    const total = player.rangeEnd - startFrame;
+    const baseName = sanitizeFilename(activeAnim ? activeAnim.name : 'timeline');
+    const includeBg = els.exportBgToggle.checked;
+    const bgColor = includeBg ? els.bgColor.value : null;
+    const padLen = String(Math.max(0, total - 1)).length;
+    els.exportStatus.textContent = `Renderizando "${baseName}"…`;
+    for(let i = 0; i < total; i++){
+      player.setFrame(startFrame + i);
+      player.render({ backgroundColor: bgColor });
+      const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
+      if(!blob) throw new Error('toBlob falló en frame ' + i);
+      zip.file(`${baseName}_${String(i).padStart(padLen, '0')}.png`, blob);
+      const pct = Math.round(((i+1)/total)*100);
+      els.exportProgressFill.style.width = pct + '%';
+      els.exportDetail.textContent = `${i+1} / ${total} frames`;
+      if((i & 7) === 0) await new Promise(r => setTimeout(r, 0));
+    }
+    els.exportStatus.textContent = 'Comprimiendo ZIP…';
+    els.exportDetail.textContent = '';
+    const out = await zip.generateAsync({ type: 'blob' }, m => {
+      els.exportProgressFill.style.width = (m.percent | 0) + '%';
+      els.exportDetail.textContent = (m.percent | 0) + '%';
+    });
+    const url = URL.createObjectURL(out);
+    const a = document.createElement('a');
+    a.href = url; a.download = `${baseName}.zip`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+    els.exportStatus.textContent = '¡Listo!';
+    els.exportDetail.textContent = `${total} frames empaquetados`;
+    setTimeout(() => els.exportOverlay.classList.remove('active'), 700);
+  } catch(e){
+    console.error(e);
+    els.exportStatus.textContent = 'Error al exportar';
+    els.exportDetail.textContent = (e && e.message) || String(e);
+    setTimeout(() => els.exportOverlay.classList.remove('active'), 2200);
+  } finally {
+    player._suspendRender = false;
+    els.btnExport.disabled = false;
+    els.btnExportZip.disabled = false;
+    if(wasPlaying) player.play();
+  }
+}
+els.btnExportZip.addEventListener('click', exportZip);
 
 applyBgColor();
 applyChecker();
