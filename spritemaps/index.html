@@ -119,6 +119,11 @@
           <option value="fit">Ajustar</option>
         </select>
       </div>
+      <div class="group" title="Calidad real del render: afecta tanto la preview como la exportación. Cuanto menor, menor resolución de los frames generados.">
+        <label>Escala</label>
+        <input type="range" id="quality-scale" min="5" max="100" value="100" step="5" style="width:140px">
+        <span class="frame-info" id="quality-scale-label">100%</span>
+      </div>
       <div class="group"><label>BG</label>
         <input type="color" id="bg-color" value="#999999">
         <label class="toggle"><input type="checkbox" id="checker-toggle" checked>Damero</label>
@@ -190,6 +195,14 @@ class AtlasPlayer {
     this._suspendRender=false;
     // Translation applied before root M3D (set by setRange to fit content into canvas)
     this.tx=0; this.ty=0;
+    // Quality scale: actually multiplies the rendered resolution (preview + export).
+    // 1.0 = 100%. Auto-set on load so the largest animation fits within MAX_DIM px.
+    this.qualityScale = 1;
+    // Active timeline: defaults to the main one. For symbol-type animations,
+    // setRange replaces this with the chosen symbol's TL and disables the
+    // root transform so the symbol plays at its natural origin.
+    this.activeTL = null;
+    this.useRootTransform = true;
     // Canvas effective size (auto-fit per animation)
     this.W=100; this.H=100;
     this._loop=this._loop.bind(this);
@@ -243,16 +256,73 @@ class AtlasPlayer {
     return null;
   }
 
+  // Detect playable animations using the same heuristic as the reference web:
+  //   1. Frame labels on the main timeline (preferred when present).
+  //   2. Otherwise, list every symbol from SD.S, marking as "parts" (hidden)
+  //      those that match known PARTS naming patterns OR are referenced
+  //      *only* from inside other symbols (i.e. used as sub-elements, not
+  //      played as standalone animations from the root timeline).
   getAnimations(){
     if(!this.animation) return [];
-    const out=[], seen=new Set();
-    for(const layer of this.animation.AN.TL.L)
-      for(const fr of layer.FR)
-        if(fr.N && fr.N!=='None' && !seen.has(fr.N)){
+    const animation = this.animation;
+    const out = [];
+    const seen = new Set();
+
+    // Pass 1 — frame labels on the main timeline
+    for(const layer of animation.AN.TL.L)
+      for(const fr of (layer.FR || []))
+        if(fr.N && fr.N !== 'None' && !seen.has(fr.N)){
           seen.add(fr.N);
-          out.push({name:fr.N, start:fr.I||0, duration:fr.DU||1});
+          out.push({name: fr.N, type: 'label', start: fr.I||0, duration: fr.DU||1});
         }
-    out.sort((a,b)=>a.start-b.start);
+    if(out.length > 0){
+      out.sort((a,b) => a.start - b.start);
+      return out;
+    }
+
+    // Pass 2 — symbols from SD.S, filtered for "parts"
+    if(!animation.SD || !animation.SD.S) return out;
+
+    // Symbols referenced from the ROOT animation's timeline are playable.
+    const anRefs = new Set();
+    if(animation.AN && animation.AN.TL){
+      for(const layer of animation.AN.TL.L)
+        for(const fr of (layer.FR || []))
+          for(const el of (fr.E || []))
+            if(el.SI && el.SI.SN) anRefs.add(el.SI.SN);
+    }
+    // Symbols referenced ONLY from inside other symbols are sub-parts.
+    const subRefs = new Set();
+    for(const sym of animation.SD.S){
+      if(!sym.TL || !sym.TL.L) continue;
+      for(const layer of sym.TL.L)
+        for(const fr of (layer.FR || []))
+          for(const el of (fr.E || []))
+            if(el.SI && el.SI.SN && !anRefs.has(el.SI.SN)) subRefs.add(el.SI.SN);
+    }
+    // Naming-based "parts" patterns (matches the reference web's list).
+    const PARTS_PATTERNS = [
+      /^z_parts\//i, /\/PARTS\//i, /\/parts\//i, /\bPARTS\b/i,
+      /^PARTS\//i, /\/PARTS copy/i, /^Symbol\s+\d+$/i,
+      /^S[ií]mbolo\s+\d+/i, /^Duplicate/i,
+    ];
+    function isPart(name){
+      for(const p of PARTS_PATTERNS) if(p.test(name)) return true;
+      return subRefs.has(name);
+    }
+
+    for(const sym of animation.SD.S){
+      if(!sym.SN || seen.has(sym.SN)) continue;
+      if(isPart(sym.SN)) continue;
+      let len = 0;
+      if(sym.TL && sym.TL.L)
+        for(const layer of sym.TL.L)
+          for(const fr of (layer.FR || []))
+            len = Math.max(len, (fr.I||0) + (fr.DU||1));
+      if(len < 1) continue;
+      seen.add(sym.SN);
+      out.push({name: sym.SN, type: 'symbol', symbol: sym, start: 0, duration: len});
+    }
     return out;
   }
 
@@ -262,7 +332,7 @@ class AtlasPlayer {
     let minX=Infinity, minY=Infinity, maxX=-Infinity, maxY=-Infinity;
 
     const root = this.animation.AN.STI && this.animation.AN.STI.SI;
-    const rootM = root ? getMX(root) : [1,0,0,1,0,0];
+    const rootM = (root && this.useRootTransform) ? getMX(root) : [1,0,0,1,0,0];
 
     const self = this;
     function mul(A, B){
@@ -315,8 +385,9 @@ class AtlasPlayer {
       }
     }
 
+    const tl = this.activeTL || this.animation.AN.TL;
     for(let f=start; f<end; f++){
-      walkTimeline(this.animation.AN.TL, f, rootM);
+      walkTimeline(tl, f, rootM);
     }
     if(minX===Infinity) return null;
     return {minX, minY, maxX, maxY};
@@ -327,17 +398,19 @@ class AtlasPlayer {
     this.rangeEnd   = Math.max(this.rangeStart+1, Math.min(this.totalFrames, end));
     if(this.currentFrame<this.rangeStart || this.currentFrame>=this.rangeEnd)
       this.currentFrame = this.rangeStart;
-    // Compute bbox of this range, set canvas size, and translation
+    // Compute bbox of this range, set canvas size and translation, scaled by qualityScale.
     const b = this.computeRangeBounds(this.rangeStart, this.rangeEnd);
     if(b){
       const PAD = 10;
-      const w = Math.max(1, Math.ceil(b.maxX - b.minX) + PAD*2);
-      const h = Math.max(1, Math.ceil(b.maxY - b.minY) + PAD*2);
+      const s = this.qualityScale || 1;
+      const w = Math.max(1, Math.ceil((b.maxX - b.minX) * s) + Math.ceil(PAD*2*s));
+      const h = Math.max(1, Math.ceil((b.maxY - b.minY) * s) + Math.ceil(PAD*2*s));
       this.W = w; this.H = h;
       this.canvas.width = w;
       this.canvas.height = h;
-      this.tx = -Math.floor(b.minX) + PAD;
-      this.ty = -Math.floor(b.minY) + PAD;
+      // Translation in scaled-canvas pixels.
+      this.tx = (-Math.floor(b.minX) + PAD) * s;
+      this.ty = (-Math.floor(b.minY) + PAD) * s;
     }
   }
 
@@ -385,15 +458,17 @@ class AtlasPlayer {
     } else {
       ctx.clearRect(0,0,this.W,this.H);
     }
-    // Apply auto-fit translation, then root transform
+    // Apply auto-fit translation, then quality scale, then root transform
     ctx.translate(this.tx, this.ty);
+    const s = this.qualityScale || 1;
+    if(s !== 1) ctx.scale(s, s);
     const root = this.animation.AN.STI && this.animation.AN.STI.SI;
     ctx.save();
-    if(root){
+    if(root && this.useRootTransform){
       const M = getMX(root);
       ctx.transform(M[0],M[1],M[2],M[3],M[4],M[5]);
     }
-    this._renderTimeline(this.animation.AN.TL, this.currentFrame);
+    this._renderTimeline(this.activeTL || this.animation.AN.TL, this.currentFrame);
     ctx.restore();
   }
 
@@ -467,7 +542,7 @@ const player = new AtlasPlayer(canvas);
 const els = {};
 ['status-png','status-sm','status-anim','btn-folder','btn-files','input-folder','input-files','error-area',
  'anim-list','info-state','btn-play','btn-pause','btn-prev','btn-next','frame-slider','frame-display',
- 'fps-input','zoom-select','bg-color','checker-toggle','canvas-wrap','drop-overlay','btn-export','btn-export-zip',
+ 'fps-input','zoom-select','bg-color','checker-toggle','canvas-wrap','drop-overlay','btn-export','btn-export-zip','quality-scale','quality-scale-label',
  'export-bg-toggle','export-overlay','export-status','export-progress-fill','export-detail']
   .forEach(id => {
     const k = id.replace(/-([a-z])/g, (_,c)=>c.toUpperCase());
@@ -556,6 +631,8 @@ function onLoaded(){
   els.fpsInput.value = player.fps;
   els.bgColor.value = (player.bg || '#999999').slice(0,7);
   applyBgColor();
+  // Auto-default quality scale: largest animation must fit within MAX_DIM (1920 px).
+  computeDefaultQualityScale(anims);
   if(anims.length > 0) selectAnim(anims[0]); else selectAnim(null);
   player.play();
   els.infoState.textContent =
@@ -564,6 +641,13 @@ function onLoaded(){
 
 function selectAnim(a){
   activeAnim = a;
+  if(a && a.type === 'symbol'){
+    player.activeTL = a.symbol.TL;
+    player.useRootTransform = false;
+  } else {
+    player.activeTL = null;
+    player.useRootTransform = true;
+  }
   if(a) player.setRange(a.start, a.start + a.duration);
   else player.setRange(0, player.totalFrames);
   player.setFrame(player.rangeStart);
@@ -672,23 +756,27 @@ function _fcc(a,o,s){for(let i=0;i<4;i++)a[o+i]=s.charCodeAt(i);}
 function _rfcc(a,o){return String.fromCharCode(a[o],a[o+1],a[o+2],a[o+3]);}
 function _canvasToWebP(c){return new Promise((res,rej)=>c.toBlob(b=>b?res(b):rej(new Error('toBlob image/webp no soportado')),'image/webp',1.0));}
 
-async function _buildAnimatedWebP(canvases, frameDurationMs, W, H){
-  const frames = [];
-  for(let i=0;i<canvases.length;i++){
-    const blob = await _canvasToWebP(canvases[i]);
-    const buf = new Uint8Array(await blob.arrayBuffer());
-    if(_rfcc(buf,0)!=='RIFF'||_rfcc(buf,8)!=='WEBP') throw new Error('Frame '+i+' WebP inválido');
-    let off=12, imgChunk=null, alphChunk=null;
-    while(off+8<=buf.length){
-      const t=_rfcc(buf,off); const size=_r32(buf,off+4);
-      const end=off+8+size+(size&1);
-      if(t==='VP8L'||t==='VP8 ') imgChunk=buf.slice(off,end);
-      else if(t==='ALPH') alphChunk=buf.slice(off,end);
-      off=end;
-    }
-    if(!imgChunk) throw new Error('Frame '+i+' sin VP8L/VP8');
-    frames.push({imgChunk, alphChunk});
+// Encode the given canvas as a single WebP and return only the small
+// VP8L (or VP8 + ALPH) chunks. The intermediate canvas/blob/arraybuffer are
+// dropped as soon as the chunks are extracted, freeing GPU/heap RAM.
+async function _extractWebPChunks(canvas){
+  const blob = await _canvasToWebP(canvas);
+  const buf = new Uint8Array(await blob.arrayBuffer());
+  if(_rfcc(buf,0)!=='RIFF'||_rfcc(buf,8)!=='WEBP') throw new Error('WebP inválido');
+  let off=12, imgChunk=null, alphChunk=null;
+  while(off+8<=buf.length){
+    const tag=_rfcc(buf,off); const size=_r32(buf,off+4);
+    const end=off+8+size+(size&1);
+    if(tag==='VP8L'||tag==='VP8 ') imgChunk=buf.slice(off,end);
+    else if(tag==='ALPH') alphChunk=buf.slice(off,end);
+    off=end;
   }
+  if(!imgChunk) throw new Error('Falta VP8L/VP8 en el frame');
+  return {imgChunk, alphChunk};
+}
+
+// Assemble final animated WebP from already-extracted per-frame chunks.
+function _assembleAnimatedWebP(frames, frameDurationMs, W, H){
   const vp8x = new Uint8Array(8+10);
   _fcc(vp8x,0,'VP8X'); _w32(vp8x,4,10);
   vp8x[8] = 0x10|0x02;
@@ -730,6 +818,10 @@ async function exportWebP(){
   els.exportStatus.textContent = 'Preparando…';
   els.exportProgressFill.style.width = '0%';
   els.exportDetail.textContent = '';
+  // Streaming pipeline: render → encode → push small chunk → release big buffers.
+  // This avoids holding N full-resolution canvases in RAM (which scales as
+  // N×W×H×4 bytes — easily multiple GB for long high-quality animations).
+  let frameChunks = null;
   try {
     player._suspendRender = true;
     const startFrame = player.rangeStart;
@@ -742,33 +834,34 @@ async function exportWebP(){
     const W = player.W, H = player.H;
     els.exportStatus.textContent = `Renderizando "${baseName}" (${total} frames)…`;
 
-    // Render each frame to its own canvas
-    const canvases = [];
+    frameChunks = new Array(total);
     for(let i = 0; i < total; i++){
       player.setFrame(startFrame + i);
       player.render({backgroundColor: bgColor});
-      // Snapshot the player's canvas into a separate one
-      const c = document.createElement('canvas');
-      c.width = W; c.height = H;
-      c.getContext('2d').drawImage(canvas, 0, 0);
-      canvases.push(c);
-      const pct = Math.round(((i+1)/total) * 60);
+      // Encode this frame in place; only the compact chunk lives on after.
+      frameChunks[i] = await _extractWebPChunks(canvas);
+      const pct = Math.round(((i+1)/total) * 90);
       els.exportProgressFill.style.width = pct + '%';
       els.exportDetail.textContent = `Frame ${i+1} / ${total}`;
+      // Yield occasionally so UI stays responsive and GC has a chance.
       if((i & 7) === 0) await new Promise(r => setTimeout(r, 0));
     }
 
-    els.exportStatus.textContent = `Codificando WebP animado…`;
-    els.exportDetail.textContent = `${canvases.length} frames @ ${fps}fps`;
-    els.exportProgressFill.style.width = '70%';
-    const blob = await _buildAnimatedWebP(canvases, frameDurationMs, W, H);
+    els.exportStatus.textContent = `Empaquetando WebP animado…`;
+    els.exportDetail.textContent = `${total} frames @ ${fps}fps`;
+    els.exportProgressFill.style.width = '95%';
+    const blob = _assembleAnimatedWebP(frameChunks, frameDurationMs, W, H);
+    // Drop chunk references — they are no longer needed.
+    frameChunks = null;
     els.exportProgressFill.style.width = '100%';
 
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url; a.download = `${baseName}.webp`;
     document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 5000);
+    // Revoke quickly: once the browser has started the download we don't
+    // need the in-memory blob URL anymore.
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
     els.exportStatus.textContent = '¡Listo!';
     els.exportDetail.textContent = `${(blob.size/1024).toFixed(1)} KB`;
     setTimeout(() => els.exportOverlay.classList.remove('active'), 800);
@@ -778,6 +871,8 @@ async function exportWebP(){
     els.exportDetail.textContent = (e && e.message) || String(e);
     setTimeout(() => els.exportOverlay.classList.remove('active'), 2400);
   } finally {
+    // Make sure heavy refs are released even on error.
+    frameChunks = null;
     player._suspendRender = false;
     els.btnExport.disabled = false;
     if(wasPlaying) player.play();
@@ -842,7 +937,7 @@ async function exportZip(){
     const a = document.createElement('a');
     a.href = url; a.download = `${baseName}.zip`;
     document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 5000);
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
     els.exportStatus.textContent = '¡Listo!';
     els.exportDetail.textContent = `${total} frames empaquetados`;
     setTimeout(() => els.exportOverlay.classList.remove('active'), 700);
@@ -859,6 +954,38 @@ async function exportZip(){
   }
 }
 els.btnExportZip.addEventListener('click', exportZip);
+
+function computeDefaultQualityScale(anims){
+  if(!player.animation) return;
+  const MAX_DIM = 1920;
+  let maxDim = 0;
+  const ranges = anims && anims.length
+    ? anims.map(a => [a.start, a.start + a.duration])
+    : [[0, player.totalFrames]];
+  for(const [s, e] of ranges){
+    const b = player.computeRangeBounds(s, e);
+    if(!b) continue;
+    const w = b.maxX - b.minX, h = b.maxY - b.minY;
+    if(w > maxDim) maxDim = w;
+    if(h > maxDim) maxDim = h;
+  }
+  let scale = 1;
+  if(maxDim > MAX_DIM) scale = MAX_DIM / maxDim;
+  // Snap to nearest 5%
+  scale = Math.max(0.05, Math.min(1, Math.round(scale * 20) / 20));
+  player.qualityScale = scale;
+  els.qualityScale.value = String(Math.round(scale * 100));
+  els.qualityScaleLabel.textContent = Math.round(scale * 100) + '%';
+}
+
+els.qualityScale.addEventListener('input', () => {
+  const v = Math.max(5, Math.min(100, parseInt(els.qualityScale.value, 10) || 100));
+  player.qualityScale = v / 100;
+  els.qualityScaleLabel.textContent = v + '%';
+  // Recompute canvas size & re-render at the new scale, preserving the active range.
+  player.setRange(player.rangeStart, player.rangeEnd);
+  applyZoom();
+});
 
 applyBgColor();
 applyChecker();
