@@ -235,7 +235,7 @@ class AtlasPlayer {
   _computeTotalFrames(){
     let m=0;
     for(const layer of this.animation.AN.TL.L)
-      for(const fr of layer.FR)
+      for(const fr of (layer.FR||[]))
         m=Math.max(m, (fr.I||0)+(fr.DU||1));
     return m||1;
   }
@@ -243,13 +243,13 @@ class AtlasPlayer {
   _symbolLength(sym){
     let m=0;
     for(const layer of sym.TL.L)
-      for(const fr of layer.FR)
+      for(const fr of (layer.FR||[]))
         m=Math.max(m, (fr.I||0)+(fr.DU||1));
     return m||1;
   }
 
   _findFrameBlock(layer, frame){
-    for(const fr of layer.FR){
+    for(const fr of (layer.FR||[])){
       const I=fr.I||0, DU=fr.DU||1;
       if(frame>=I && frame<I+DU) return fr;
     }
